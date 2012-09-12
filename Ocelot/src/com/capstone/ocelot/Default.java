@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+@SuppressWarnings("unused")
 public class Default extends FragmentActivity implements ActionBar.TabListener {
 
     /**
@@ -89,7 +90,9 @@ public class Default extends FragmentActivity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
-
+    
+    // Must rework these functions, they seem to give the compiler headaches.
+    /*
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
@@ -103,6 +106,7 @@ public class Default extends FragmentActivity implements ActionBar.TabListener {
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
+    */
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
