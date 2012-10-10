@@ -7,5 +7,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_default">Default</string>
+    <string name="hello">Hello there!</string>
 
 </resources>
