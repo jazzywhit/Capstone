@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import android.app.ListActivity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -47,5 +50,27 @@ public class Default extends ListActivity {
 	Sound s = (Sound) mSounds.get(position);
 	MediaPlayer mp = MediaPlayer.create(this, s.getSoundResourceId());
 	mp.start();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_default, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.new_game:
+	            //newGame();
+	            return true;
+	        case R.id.help:
+	            //showHelp();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 }

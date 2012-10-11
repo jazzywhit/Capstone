@@ -8,5 +8,9 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_default">Sound Board</string>
     <string name="hello">Please click on an animal!</string>
+    <string name="new_game">Start a New Game</string>
+    <string name="help_topics">Help Topics</string>
+    <string name="about">About</string>
+    <string name="help">Help</string>
 
 </resources>
