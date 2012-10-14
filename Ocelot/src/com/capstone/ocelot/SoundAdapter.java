@@ -19,23 +19,23 @@ public class SoundAdapter extends ArrayAdapter<Sound>{
 		this.c = context;
 	}
 	
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
-		if (v == null) {
-			LayoutInflater vi = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.list_row, null);
-		}
-		Sound s = items.get(position);
-		if (s != null) {
-			TextView description = (TextView) v.findViewById(R.id.description);
-			if (description != null) {
-				description.setText(s.getDescription());
-			}
-			ImageView icon = (ImageView) v.findViewById(R.id.icon);
-			icon.setImageResource(s.getIconResourceId());
-		}
-		
-		return v;
-	}
+//	@Override
+//	public View getView(int position, View convertView, ViewGroup parent) {
+//		View v = convertView;
+//		if (v == null) {
+//			LayoutInflater vi = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//			v = vi.inflate(R.layout.list_row, null);
+//		}
+//		Sound s = items.get(position);
+//		if (s != null) {
+//			TextView description = (TextView) v.findViewById(R.id.description);
+//			if (description != null) {
+//				description.setText(s.getDescription());
+//			}
+//			ImageView icon = (ImageView) v.findViewById(R.id.icon);
+//			icon.setImageResource(s.getIconResourceId());
+//		}
+//		
+//		return v;
+//	}
 }

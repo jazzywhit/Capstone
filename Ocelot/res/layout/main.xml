@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gridview"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:columnWidth="180dp"
+    android:gravity="fill"
+    android:horizontalSpacing="10dp"
+    android:numColumns="2"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:stretchMode="spacingWidthUniform"
+    android:verticalSpacing="10dp" />
+
+<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
@@ -18,4 +30,4 @@ android:background="#ffffff"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:dividerHeight="1dip"/>
-</LinearLayout>
+</LinearLayout> -->
