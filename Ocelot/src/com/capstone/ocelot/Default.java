@@ -41,6 +41,13 @@ public class Default extends ListActivity {
 		s.setIconResourceId(R.drawable.dog);
 		s.setSoundResourceId(R.raw.dog);
 		mSounds.add(s);
+		
+		s = new Sound();
+		s.setDescription("Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mSounds.add(s);
+		
 		mAdapter = new SoundAdapter(this, R.layout.list_row, mSounds);
 		setListAdapter(mAdapter);
 	}
