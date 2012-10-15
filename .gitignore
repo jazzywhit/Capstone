@@ -1,1 +1,5 @@
+.DS_Store
+*.cache
+*.class
 .metadata/
+gen/
