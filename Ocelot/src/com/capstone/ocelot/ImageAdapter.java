@@ -1,5 +1,7 @@
 package com.capstone.ocelot;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -11,13 +13,42 @@ import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
+    private ArrayList<SoundBoardItem> mSoundBoardItems = null;
 
-    public ImageAdapter(Context c) {
+    public ImageAdapter(Context c, ArrayList<SoundBoardItem> mSoundBoardItems) {
         mContext = c;
+        
+        //This will need to be extended so that we can load from a database!
+		//create a simple list
+        this.mSoundBoardItems = mSoundBoardItems;
+        
+//        SoundBoardItem s = new SoundBoardItem();
+//		s.setDescription("Cougar");
+//		s.setIconResourceId(R.drawable.cougar);
+//		s.setSoundResourceId(R.raw.cougar);
+//		mSoundBoardItems.add(s);
+//		
+//		s = new SoundBoardItem();
+//		s.setDescription("Chicken");
+//		s.setIconResourceId(R.drawable.chicken);
+//		s.setSoundResourceId(R.raw.chicken);
+//		mSoundBoardItems.add(s);
+//		
+//		s = new SoundBoardItem();
+//		s.setDescription("Dog");
+//		s.setIconResourceId(R.drawable.dog);
+//		s.setSoundResourceId(R.raw.dog);
+//		mSoundBoardItems.add(s);
+//		
+//		s = new SoundBoardItem();
+//		s.setDescription("Elephant");
+//		s.setIconResourceId(R.drawable.elephant);
+//		s.setSoundResourceId(R.raw.elephant);
+//		mSoundBoardItems.add(s);
     }
 
     public int getCount() {
-        return mThumbIds.length;
+        return mSoundBoardItems.size();
     }
 
     public Object getItem(int position) {
@@ -41,13 +72,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(mThumbIds[position]);
+        imageView.setImageResource(mSoundBoardItems.get(position).getIconResourceId());
         return imageView;
     }
-
-    // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.chicken, R.drawable.cougar,
-            R.drawable.dog, R.drawable.elephant
-    };
 }

@@ -1,24 +1,24 @@
-package com.capstone.ocelot;
-
-import java.util.ArrayList;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-public class SoundAdapter extends ArrayAdapter<Sound>{
-	private ArrayList<Sound> items;
-	private Context c = null;
-	
-	public SoundAdapter(Context context, int textViewResourceId, ArrayList<Sound> items) {
-		super(context, textViewResourceId, items);
-		this.items = items;
-		this.c = context;
-	}
-	
+//package com.capstone.ocelot;
+//
+//import java.util.ArrayList;
+//import android.content.Context;
+//import android.view.LayoutInflater;
+//import android.view.View;
+//import android.view.ViewGroup;
+//import android.widget.ArrayAdapter;
+//import android.widget.ImageView;
+//import android.widget.TextView;
+//
+//public class SoundAdapter extends ArrayAdapter<Sound>{
+//	private ArrayList<Sound> items;
+//	private Context c = null;
+//	
+//	public SoundAdapter(Context context, int textViewResourceId, ArrayList<Sound> items) {
+//		super(context, textViewResourceId, items);
+//		this.items = items;
+//		this.c = context;
+//	}
+//	
 //	@Override
 //	public View getView(int position, View convertView, ViewGroup parent) {
 //		View v = convertView;
@@ -38,4 +38,4 @@ public class SoundAdapter extends ArrayAdapter<Sound>{
 //		
 //		return v;
 //	}
-}
+//}

@@ -1,6 +1,6 @@
 package com.capstone.ocelot;
 
-public class Sound {
+public class SoundBoardItem {
 	private String mDescription = "";
 	private int mSoundResourceId = -1;
 	private int mIconResourceId = -1;
