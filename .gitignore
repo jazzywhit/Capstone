@@ -2,4 +2,6 @@
 *.cache
 *.class
 .metadata/
-gen/
+Ocelot/gen/
+Ocelot/bin/res/
+*.ap*
