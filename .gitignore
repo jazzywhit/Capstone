@@ -5,3 +5,4 @@
 Ocelot/gen/
 Ocelot/bin/res/
 *.ap*
+*.dex

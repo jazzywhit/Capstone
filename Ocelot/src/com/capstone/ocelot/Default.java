@@ -39,19 +39,16 @@ public class Default extends Activity {
     	//int height = metrics.heightPixels;
     	//int width = metrics.widthPixels;
 		
-	    gridview.setOnItemClickListener(new OnItemClickListener() {
+	    gridview.setOnItemClickListener(new OnItemClickListener() {  //Display the description associated with the object.
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	        	//MediaPlayer mp = MediaPlayer.create(parent.getContext(), mSoundBoardItems.get(position).getSoundResourceId());
-	        	//mp.start();
 	        	Toast.makeText(parent.getContext(), "" + mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
 	        }
 	    });
 	    
-	    gridview.setOnItemLongClickListener(new OnItemLongClickListener() {
+	    gridview.setOnItemLongClickListener(new OnItemLongClickListener() {  //Play the sound associated with the object.
 			public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
 	        	MediaPlayer mp = MediaPlayer.create(parent.getContext(), mSoundBoardItems.get(position).getSoundResourceId());
 	        	mp.start(); 
-	        	Toast.makeText(parent.getContext(), "" + mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
 	        	return true;
 			}
 		});

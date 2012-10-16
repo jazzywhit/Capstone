@@ -3,8 +3,6 @@ package com.capstone.ocelot;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
