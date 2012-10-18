@@ -1,28 +1,25 @@
 package com.capstone.ocelot;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.DragShadowBuilder;
-import android.view.View.OnTouchListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.Toast;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+
+import com.capstone.ocelot.SoundBoard.SoundBoardGridAdapter;
+import com.capstone.ocelot.SoundBoard.SoundBoardItem;
+import com.capstone.ocelot.SoundBoard.SoundBoardSequenceAdapter;
 
 
 public class Default extends Activity {
-	ArrayList<SoundBoardItem> mSoundBoardItems = null;
+	ArrayList<SoundBoardItem> mGridItems = null;
+	ArrayAdapter<SoundBoardItem> mSequenceItemAdapter;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -31,57 +28,27 @@ public class Default extends Activity {
 		setContentView(R.layout.main);
 		
 		//Set and load the soundboardItems
-		mSoundBoardItems = LoadSoundBoard();
+		//TODO This will need to be extended so that we can load from a database!
+		mGridItems = LoadSoundBoard(); //Load the initial items to the grid
 		
-		//Setup the view
+		//Setup the gridview adapter
 		GridView gridview = (GridView) findViewById(R.id.gridview);
-	    gridview.setAdapter(new ImageAdapter(this, mSoundBoardItems));
+	    gridview.setAdapter(new SoundBoardGridAdapter(this, mGridItems));
 	    
-	    //Get the width and height of the screen to set the size of the pictures.
+	    //Setup the sequence adapter
+	    //TODO Rename all the classes to better explain their function
+	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
+		HorizontalScrollView sequenceView = (HorizontalScrollView) findViewById(R.id.sequenceview);
+		sequenceView.setAdapter(new SoundBoardSequenceAdapter(this, mSequenceItems));
+	   
+	    
+	    //TODO Get the width and height of the screen to set the size of the pictures.
 	    //Will need to do this in order to set the columns/rows up properly.
     	//DisplayMetrics metrics = new DisplayMetrics();
     	//getWindowManager().getDefaultDisplay().getMetrics(metrics);
     	//int height = metrics.heightPixels;
     	//int width = metrics.widthPixels;
-	    
-//	    Iterator<SoundBoardItem> itrItems = mSoundBoardItems.iterator();
-//	    while(itrItems.hasNext()){
-//	    	itrItems.next()..setOnTouchListener(new MyTouchListener());
-//	    }
-	    
-	    //findViewById(R.id.gridview).setOnTouchListener(new MyTouchListener()); //It appears that this needs to be added to a view, not an object in the view.
-		
-//	    gridview.setOnItemClickListener(new OnItemClickListener() {  //Display the description associated with the object.
-//	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//	        	MediaPlayer mp = MediaPlayer.create(parent.getContext(), mSoundBoardItems.get(position).getSoundResourceId());
-//	        	mp.start();
-//	        	Toast.makeText(parent.getContext(), "" + mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
-//	        }
-//	    });
-	    
-//	    gridview.setOnItemLongClickListener(new OnItemLongClickListener() {  //Play the sound associated with the object.
-//			public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-//	        	MediaPlayer mp = MediaPlayer.create(parent.getContext(), mSoundBoardItems.get(position).getSoundResourceId());
-//	        	mp.start(); 
-//	        	return true;
-//			}
-//		});
 	}
-	
-//	//Touch Listener to interact with the SoundBoardItems
-//	private final class MyTouchListener implements OnTouchListener {
-//	    public boolean onTouch(View view, MotionEvent motionEvent) {
-//	      if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//	        ClipData data = ClipData.newPlainText("", "");
-//	        DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-//	        view.startDrag(data, shadowBuilder, view, 0);
-//	        //view.setVisibility(View.INVISIBLE);
-//	        return true;
-//	      } else {
-//	        return false;
-//	      }
-//	    }
-//	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -110,6 +77,54 @@ public class Default extends Activity {
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 		
 	    SoundBoardItem s = new SoundBoardItem();
+		s.setDescription("Cougar");
+		s.setIconResourceId(R.drawable.cougar);
+		s.setSoundResourceId(R.raw.cougar);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Dog");
+		s.setIconResourceId(R.drawable.dog);
+		s.setSoundResourceId(R.raw.dog);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Cougar");
+		s.setIconResourceId(R.drawable.cougar);
+		s.setSoundResourceId(R.raw.cougar);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Dog");
+		s.setIconResourceId(R.drawable.dog);
+		s.setSoundResourceId(R.raw.dog);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
 		s.setDescription("Cougar");
 		s.setIconResourceId(R.drawable.cougar);
 		s.setSoundResourceId(R.raw.cougar);

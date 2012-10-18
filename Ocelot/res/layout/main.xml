@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/soundboardview"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/soundboard"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:gravity="fill"
-    android:orientation="horizontal"
-    android:scrollbarAlwaysDrawVerticalTrack="true">
+    android:orientation="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="true" >
     
-	    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/gridview"
-	    android:layout_width="fill_parent"
-	    android:layout_height="300dp"
-	    android:clickable="true"
-	    android:columnWidth="110dp"
-	    android:focusable="true"
-	    android:focusableInTouchMode="true"
-	    android:gravity="fill"
-	    android:horizontalSpacing="10dp"
-	    android:numColumns="2"
-	    android:scrollbarAlwaysDrawVerticalTrack="true"
-	    android:stretchMode="spacingWidthUniform"
-	    android:verticalSpacing="10dp" />
-	    
-	    <TextView android:id="@+id/empty" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:gravity="center"
-                    android:text="Loading" android:visibility="invisible" />
+    <GridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/sequence_linearlayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:clickable="true"
+        android:columnWidth="180dp"
+        android:focusable="true"
+        android:focusableInTouchMode="false"
+        android:gravity="left"
+        android:horizontalSpacing="10dp"
+        android:numColumns="4"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:stretchMode="spacingWidthUniform"
+        android:verticalSpacing="10dp" >
+
+    </GridView>
+    
+    <LinearLayout
+        android:id="@+id/sequence_linearlayout"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal" >
+
+        <HorizontalScrollView
+            android:id="@+id/sequenceview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+        </HorizontalScrollView>
+
     </LinearLayout>
-    
-<!--
+
+</RelativeLayout><!--
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
 android:layout_width="fill_parent"

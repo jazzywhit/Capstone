@@ -1,4 +1,4 @@
-package com.capstone.ocelot;
+package com.capstone.ocelot.SoundBoard;
 
 public class SoundBoardItem {
 	private String mDescription = "";
