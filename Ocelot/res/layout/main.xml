@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/gridview"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:columnWidth="110dp"
-    android:gravity="fill"
-    android:horizontalSpacing="10dp"
-    android:numColumns="2"
-    android:scrollbarAlwaysDrawVerticalTrack="true"
-    android:stretchMode="spacingWidthUniform"
-    android:verticalSpacing="10dp" 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/soundboardview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:clickable="true"
-/>
-
-<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="fill"
+    android:orientation="horizontal"
+    android:scrollbarAlwaysDrawVerticalTrack="true">
+    
+	    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/gridview"
+	    android:layout_width="fill_parent"
+	    android:layout_height="300dp"
+	    android:clickable="true"
+	    android:columnWidth="110dp"
+	    android:focusable="true"
+	    android:focusableInTouchMode="true"
+	    android:gravity="fill"
+	    android:horizontalSpacing="10dp"
+	    android:numColumns="2"
+	    android:scrollbarAlwaysDrawVerticalTrack="true"
+	    android:stretchMode="spacingWidthUniform"
+	    android:verticalSpacing="10dp" />
+	    
+	    <TextView android:id="@+id/empty" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:gravity="center"
+                    android:text="Loading" android:visibility="invisible" />
+    </LinearLayout>
+    
+<!--
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
@@ -34,4 +50,5 @@ android:background="#ffffff"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:dividerHeight="1dip"/>
-</LinearLayout> -->
+</LinearLayout>
+-->
