@@ -31,7 +31,7 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 	}
 
 	public Object getItem(int position) {
-		return null;
+		return mSoundBoardItems.get(position);
 	}
 
 	public long getItemId(int position) {
@@ -44,7 +44,7 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		ImageView imageView;
 		if (convertView == null) {  // if it's not recycled, initialize some attributes
 			imageView = new ImageView(mContext);
-			imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
+			imageView.setLayoutParams(new GridView.LayoutParams(150, 150));
 			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			imageView.setPadding(8, 8, 8, 8);
 		} else {

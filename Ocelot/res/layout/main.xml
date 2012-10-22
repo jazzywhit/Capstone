@@ -19,7 +19,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:clickable="true"
-        android:columnWidth="180dp"
+        android:columnWidth="100dp"
         android:focusable="true"
         android:focusableInTouchMode="false"
         android:gravity="left"
@@ -34,17 +34,19 @@
     <LinearLayout
         android:id="@+id/sequence_linearlayout"
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
+          <TextView
+              android:layout_width="fill_parent"
+              android:layout_height="10dp"/>
 
-        <HorizontalScrollView
-            android:id="@+id/sequenceview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1" >
-        </HorizontalScrollView>
+          <Gallery
+              android:id="@+id/horizontallistview"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content" 
+              android:padding="10dp"/>
 
     </LinearLayout>
 

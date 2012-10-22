@@ -7,21 +7,21 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.widget.Gallery;
 import android.widget.GridView;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 
 import com.capstone.ocelot.SoundBoard.SoundBoardGridAdapter;
 import com.capstone.ocelot.SoundBoard.SoundBoardItem;
 import com.capstone.ocelot.SoundBoard.SoundBoardSequenceAdapter;
 
 
+@SuppressWarnings("deprecation")
 public class Default extends Activity {
-	ArrayList<SoundBoardItem> mGridItems = null;
-	ArrayAdapter<SoundBoardItem> mSequenceItemAdapter;
+	ArrayList<SoundBoardItem> mGridItems;
+	ArrayList<SoundBoardItem> mSequenceItems;
 	
 	/** Called when the activity is first created. */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,13 +32,17 @@ public class Default extends Activity {
 		mGridItems = LoadSoundBoard(); //Load the initial items to the grid
 		
 		//Setup the gridview adapter
+		//TODO This might be better done through a page view for scrolling the images.
 		GridView gridview = (GridView) findViewById(R.id.gridview);
 	    gridview.setAdapter(new SoundBoardGridAdapter(this, mGridItems));
 	    
+	    
+	    //mSequenceItems = LoadSequenceBoard();
+	    mSequenceItems = (ArrayList<SoundBoardItem>) mGridItems.clone();
 	    //Setup the sequence adapter
 	    //TODO Rename all the classes to better explain their function
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
-		HorizontalScrollView sequenceView = (HorizontalScrollView) findViewById(R.id.sequenceview);
+		Gallery sequenceView = (Gallery) findViewById(R.id.horizontallistview);
 		sequenceView.setAdapter(new SoundBoardSequenceAdapter(this, mSequenceItems));
 	   
 	    
@@ -72,11 +76,101 @@ public class Default extends Activity {
 	    }
 	}
 	
+	private ArrayList<SoundBoardItem> LoadSequenceBoard(){
+		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
+		
+	    SoundBoardItem s = new SoundBoardItem();
+		s.setDescription("Cougar");
+		s.setIconResourceId(R.drawable.cougar);
+		s.setSoundResourceId(R.raw.cougar);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mLoadItems.add(s);
+	
+		return mLoadItems;
+	}
+	
 	private ArrayList<SoundBoardItem> LoadSoundBoard(){
 		
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 		
 	    SoundBoardItem s = new SoundBoardItem();
+		s.setDescription("Cougar");
+		s.setIconResourceId(R.drawable.cougar);
+		s.setSoundResourceId(R.raw.cougar);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Dog");
+		s.setIconResourceId(R.drawable.dog);
+		s.setSoundResourceId(R.raw.dog);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Cougar");
+		s.setIconResourceId(R.drawable.cougar);
+		s.setSoundResourceId(R.raw.cougar);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Dog");
+		s.setIconResourceId(R.drawable.dog);
+		s.setSoundResourceId(R.raw.dog);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Cougar");
+		s.setIconResourceId(R.drawable.cougar);
+		s.setSoundResourceId(R.raw.cougar);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Dog");
+		s.setIconResourceId(R.drawable.dog);
+		s.setSoundResourceId(R.raw.dog);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem();
+		s.setDescription("Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+	    s = new SoundBoardItem();
 		s.setDescription("Cougar");
 		s.setIconResourceId(R.drawable.cougar);
 		s.setSoundResourceId(R.raw.cougar);
