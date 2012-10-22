@@ -66,7 +66,7 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
 			imageView.setLayoutParams(layoutParams);
 			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			imageView.setPadding(20, 20, 20, 20);
+			imageView.setPadding(0, 0, 0, 0);
 			
 //			TextView listTextView = (TextView)rowView.findViewById(R.id.itemtext);
 //			listTextView.setText(mSequenceItems.get(position).getDescription());

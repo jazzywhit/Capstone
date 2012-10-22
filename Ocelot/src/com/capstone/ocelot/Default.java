@@ -20,6 +20,7 @@ public class Default extends Activity {
 	ArrayList<SoundBoardItem> mGridItems;
 	ArrayList<SoundBoardItem> mSequenceItems;
 	
+    //TODO Rename all the classes to better explain their function
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -40,7 +41,6 @@ public class Default extends Activity {
 	    //mSequenceItems = LoadSequenceBoard();
 	    mSequenceItems = (ArrayList<SoundBoardItem>) mGridItems.clone();
 	    //Setup the sequence adapter
-	    //TODO Rename all the classes to better explain their function
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
 		Gallery sequenceView = (Gallery) findViewById(R.id.horizontallistview);
 		sequenceView.setAdapter(new SoundBoardSequenceAdapter(this, mSequenceItems));

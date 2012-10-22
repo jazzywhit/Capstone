@@ -3,10 +3,13 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:orientation="vertical" >
- 
+ 
   <ImageView android:id="@+id/seqimage"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
-      android:layout_margin="5dp" />
+      android:layout_margin="0dp"
+      android:spacing ="0dp"
+      android:padding ="0dp"
+      android:layout_weight="1" />
  
 </LinearLayout>

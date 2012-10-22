@@ -1,0 +1,15 @@
+< Example of more information per row
+<LinearLayout android:id="@+id/LinearLayout01"
+    android:layout_width="75dip" xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:background="#ffffff"> 
+
+    <TextView android:id="@+id/frame_number" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="-" android:textSize="12dip" android:textColor="#ffffff" android:background="#000000" android:gravity="center" />
+    <LinearLayout android:id="@+id/LinearLayout01"
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent" android:orientation="horizontal" android:gravity="center_horizontal">
+                <TextView  android:id="@+id/frame_shot1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="-" android:textSize="18dip" android:textColor="#000000" />
+                <TextView  android:id="@+id/frame_shot2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="-" android:textSize="18dip" android:textColor="#000000" />
+    </LinearLayout> 
+
+    <TextView android:id="@+id/frame_total" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:textSize="38dip" android:textColor="#000000"/>
+</LinearLayout>>

@@ -45,8 +45,10 @@
           <Gallery
               android:id="@+id/horizontallistview"
               android:layout_width="fill_parent"
-              android:layout_height="wrap_content" 
-              android:padding="10dp"/>
+              android:layout_height="fill_parent" 
+              android:padding="0dp"
+              android:spacing="0dp"
+              android:layout_weight="1"/>
 
     </LinearLayout>
 
