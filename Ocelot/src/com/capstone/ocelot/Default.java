@@ -42,7 +42,7 @@ public class Default extends Activity {
 	    mSequenceItems = (ArrayList<SoundBoardItem>) mGridItems.clone();
 	    //Setup the sequence adapter
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
-		Gallery sequenceView = (Gallery) findViewById(R.id.horizontallistview);
+		Gallery sequenceView = (Gallery) findViewById(R.id.seqgallery);
 		sequenceView.setAdapter(new SoundBoardSequenceAdapter(this, mSequenceItems));
 	   
 	    

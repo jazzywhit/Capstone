@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.capstone.ocelot.R;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +13,25 @@ import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 @SuppressWarnings("deprecation")
 public class SoundBoardSequenceAdapter extends BaseAdapter {
 
 		Context mContext;
 		ArrayList<SoundBoardItem> mSequenceItems;
+		int mGalleryItemBackground;
 
 		public SoundBoardSequenceAdapter(Context c, ArrayList<SoundBoardItem> mSequenceItems){
 			this.mSequenceItems = mSequenceItems;
 			mContext = c;
+			//TypedArray a = c.obtainStyledAttributes(R.styleable.Gallery1);
+	        //mGalleryItemBackground = a.getResourceId(R.styleable.Gallery1_android_galleryItemBackground, 0);
+	        //a.recycle();
+//			mGalleryItemBackground = a.getResourceId(
+//			         R.styleable.Theme_android_galleryItemBackground,
+//			                   0);
+//			a.recycle();
 		}
 
 		public int getCount() {
@@ -41,32 +51,48 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 
 		public View getView(int position, View convertView, ViewGroup parent) {
 			
-			//ImageView imageView = new ImageView(mContext);
+			ImageView imageView = new ImageView(mContext);
 			
 			
 //			if (convertView == null) {  // if it's not recycled, initialize some attributes
 //				imageView = new ImageView(mContext);
-//				imageView.setLayoutParams(new Gallery.LayoutParams(parent.getWidth()/4, parent.getWidth()/4));
+//				imageView.setLayoutParams(new ScrollView.LayoutParams(parent.getWidth()/4, parent.getWidth()/4));
 //				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 //				imageView.setPadding(20, 20, 20, 20);
 //			} else {
 //				imageView = (ImageView) convertView;
 //			}
+			
+//			i.setImageBitmap(BitmapFactory.decodeFile(mImageIds[position]));
+//	        i.setScaleType(ImageView.ScaleType.FIT_XY);
+//	        i.setBackgroundResource(mGalleryItemBackground);
 
+			//ScrollView.LayoutParams layoutParams = new ScrollView.LayoutParams(150, 150);
+			
+			if (convertView == null) {  // if it's not recycled, initialize some attributes
+				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+				imageView.setLayoutParams(new Gallery.LayoutParams(150, 150));
+				imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
+				//imageView.setLayoutParams(new ScrollView.LayoutParams(parent.getWidth()/4, parent.getWidth()/4));
+				//imageView.setLayoutParams(layoutParams);
+				//imageView.setBackgroundResource(mGalleryItemBackground)
+			} else {
+				imageView = (ImageView) convertView;
+			}
 			
 			//return imageView;
 			
-			View rowView = LayoutInflater
-					.from(parent.getContext())
-					.inflate(R.layout.row, parent, false);
+//			View rowView = LayoutInflater
+//					.from(parent.getContext())
+//					.inflate(R.layout.row, parent, false);
+//			
+//			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
 			
-			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
-			
-			ImageView imageView = (ImageView)rowView.findViewById(R.id.seqimage);
-			imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
-			imageView.setLayoutParams(layoutParams);
-			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			imageView.setPadding(0, 0, 0, 0);
+//			ImageView imageView = (ImageView)rowView.findViewById(R.id.seqimage);
+//			imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
+//			imageView.setLayoutParams(layoutParams);
+//			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//			imageView.setPadding(0, 0, 0, 0);
 			
 //			TextView listTextView = (TextView)rowView.findViewById(R.id.itemtext);
 //			listTextView.setText(mSequenceItems.get(position).getDescription());
@@ -74,6 +100,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 //			iv.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
 //			iv.setScaleType(ScaleType.FIT_CENTER);
 
-			return rowView;
+			return imageView;
 		}
 }
