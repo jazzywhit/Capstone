@@ -38,8 +38,8 @@ public class Default extends Activity {
 	    gridview.setAdapter(new SoundBoardGridAdapter(this, mGridItems));
 	    
 	    
-	    //mSequenceItems = LoadSequenceBoard();
-	    mSequenceItems = (ArrayList<SoundBoardItem>) mGridItems.clone();
+	    mSequenceItems = LoadSequenceBoard();
+//	    mSequenceItems = (ArrayList<SoundBoardItem>) mGridItems.clone();
 	    //Setup the sequence adapter
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
 		Gallery sequenceView = (Gallery) findViewById(R.id.seqgallery);

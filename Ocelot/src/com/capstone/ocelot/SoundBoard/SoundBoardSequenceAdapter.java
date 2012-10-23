@@ -1,13 +1,17 @@
 package com.capstone.ocelot.SoundBoard;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.capstone.ocelot.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
@@ -49,7 +53,7 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			return position;
 		}
 
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			
 			ImageView imageView = new ImageView(mContext);
 			
@@ -72,7 +76,7 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			if (convertView == null) {  // if it's not recycled, initialize some attributes
 				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 				imageView.setLayoutParams(new Gallery.LayoutParams(150, 150));
-				imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
+				imageView.setPadding(20, 20, 20, 20);
 				//imageView.setLayoutParams(new ScrollView.LayoutParams(parent.getWidth()/4, parent.getWidth()/4));
 				//imageView.setLayoutParams(layoutParams);
 				//imageView.setBackgroundResource(mGalleryItemBackground)
@@ -80,6 +84,32 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 				imageView = (ImageView) convertView;
 			}
 			
+			imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
+			
+			
+		    imageView.setOnClickListener(new OnClickListener() {  //Play the sound associated with the object.
+				public void onClick(View v) {
+					final Iterator<SoundBoardItem> itemIter = mSequenceItems.iterator();
+					SoundBoardItem nextItem;
+					MediaPlayer mPlayer;
+					
+					while(itemIter.hasNext()){
+						nextItem = itemIter.next();
+						mPlayer = MediaPlayer.create(mContext, nextItem.getSoundResourceId());
+						mPlayer.setOnCompletionListener(new OnCompletionListener(){
+							public void onCompletion(MediaPlayer mp) {
+							}
+						});
+						while(mPlayer.isPlaying()){ try {
+							wait(10);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} }
+						mPlayer.start();
+					}
+				}
+			});
 			//return imageView;
 			
 //			View rowView = LayoutInflater
