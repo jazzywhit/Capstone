@@ -3,21 +3,19 @@ package com.capstone.ocelot.SoundBoard;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.capstone.ocelot.R;
-
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.TypedArray;
+import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.view.LayoutInflater;
+import android.net.Uri;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class SoundBoardSequenceAdapter extends BaseAdapter {
@@ -25,10 +23,16 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		Context mContext;
 		ArrayList<SoundBoardItem> mSequenceItems;
 		int mGalleryItemBackground;
+		boolean isPrepared = false;
+		SoundBoardPlayer currentSound;
+		Iterator<SoundBoardItem> itemIter;
+		Resources resources;
 
 		public SoundBoardSequenceAdapter(Context c, ArrayList<SoundBoardItem> mSequenceItems){
 			this.mSequenceItems = mSequenceItems;
 			mContext = c;
+			resources = mContext.getResources();
+			itemIter = mSequenceItems.iterator();
 			//TypedArray a = c.obtainStyledAttributes(R.styleable.Gallery1);
 	        //mGalleryItemBackground = a.getResourceId(R.styleable.Gallery1_android_galleryItemBackground, 0);
 	        //a.recycle();
@@ -89,47 +93,63 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			
 		    imageView.setOnClickListener(new OnClickListener() {  //Play the sound associated with the object.
 				public void onClick(View v) {
-					final Iterator<SoundBoardItem> itemIter = mSequenceItems.iterator();
-					SoundBoardItem nextItem;
-					MediaPlayer mPlayer;
-					
-					while(itemIter.hasNext()){
-						nextItem = itemIter.next();
-						mPlayer = MediaPlayer.create(mContext, nextItem.getSoundResourceId());
-						mPlayer.setOnCompletionListener(new OnCompletionListener(){
-							public void onCompletion(MediaPlayer mp) {
-							}
-						});
-						while(mPlayer.isPlaying()){ try {
-							wait(10);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} }
-						mPlayer.start();
+					synchronized(this){
+						while(itemIter.hasNext()){
+							LoadNextSound();
+							currentSound.play();
+							
+							
+//							//mPlayer = MediaPlayer.create(mContext, itemIter.next().getSoundResourceId());
+//							resId = itemIter.next().getSoundResourceId();
+//							
+//							
+//							soundPlayer = new SoundBoardPlayer(mContext, soundLocation);
+//							soundPlayer.play();
+						}
 					}
+					itemIter = mSequenceItems.iterator(); //Reset the iterator
 				}
 			});
-			//return imageView;
-			
-//			View rowView = LayoutInflater
-//					.from(parent.getContext())
-//					.inflate(R.layout.row, parent, false);
-//			
-//			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
-			
-//			ImageView imageView = (ImageView)rowView.findViewById(R.id.seqimage);
-//			imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
-//			imageView.setLayoutParams(layoutParams);
-//			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//			imageView.setPadding(0, 0, 0, 0);
-			
-//			TextView listTextView = (TextView)rowView.findViewById(R.id.itemtext);
-//			listTextView.setText(mSequenceItems.get(position).getDescription());
-			
-//			iv.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
-//			iv.setScaleType(ScaleType.FIT_CENTER);
 
 			return imageView;
 		}
+		
+		public void LoadNextSound(){
+			if (currentSound != null){
+				currentSound.dispose();
+			}
+			SoundBoardItem item = itemIter.next();
+			currentSound = new SoundBoardPlayer(mContext, getUriForId(item.getSoundResourceId()));
+			Toast.makeText(mContext, "Loaded: " + item.getDescription(), Toast.LENGTH_SHORT).show();
+	
+		}
+		
+		public Uri getUriForId(int resId){
+			return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+					resources.getResourcePackageName(resId) + '/' +
+					resources.getResourceTypeName(resId) + '/' +
+					resources.getResourceEntryName(resId) );
+			
+		}
 }
+
+
+//return imageView;
+
+//View rowView = LayoutInflater
+//		.from(parent.getContext())
+//		.inflate(R.layout.row, parent, false);
+//
+//LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
+
+//ImageView imageView = (ImageView)rowView.findViewById(R.id.seqimage);
+//imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
+//imageView.setLayoutParams(layoutParams);
+//imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//imageView.setPadding(0, 0, 0, 0);
+
+//TextView listTextView = (TextView)rowView.findViewById(R.id.itemtext);
+//listTextView.setText(mSequenceItems.get(position).getDescription());
+
+//iv.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
+//iv.setScaleType(ScaleType.FIT_CENTER);

@@ -22,7 +22,6 @@ public class Default extends Activity {
 	
     //TODO Rename all the classes to better explain their function
 	/** Called when the activity is first created. */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
