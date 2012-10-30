@@ -24,15 +24,23 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		ArrayList<SoundBoardItem> mSequenceItems;
 		int mGalleryItemBackground;
 		boolean isPrepared = false;
-		SoundBoardPlayer currentSound;
-		Iterator<SoundBoardItem> itemIter;
+		//SoundBoardPlayer currentSound;
+		MediaPlayer mPlayer;
+		Iterator<SoundBoardItem> seqIter;
 		Resources resources;
+		
+		OnCompletionListener mListener = new OnCompletionListener() {
+		    public void onCompletion(MediaPlayer mp) {
+		        //mp.release();
+		    	LoadNextSound();
+		    }
+		};
 
 		public SoundBoardSequenceAdapter(Context c, ArrayList<SoundBoardItem> mSequenceItems){
 			this.mSequenceItems = mSequenceItems;
 			mContext = c;
 			resources = mContext.getResources();
-			itemIter = mSequenceItems.iterator();
+			
 			//TypedArray a = c.obtainStyledAttributes(R.styleable.Gallery1);
 	        //mGalleryItemBackground = a.getResourceId(R.styleable.Gallery1_android_galleryItemBackground, 0);
 	        //a.recycle();
@@ -43,18 +51,19 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		}
 
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return mSequenceItems.size();
 		}
 
 		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return mSequenceItems.get(position).getIconResourceId();
+			return mSequenceItems.get(position);
 		}
 
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return position;
+		public long getItemIconId(int position) {
+			return mSequenceItems.get(position).getIconResourceId();
+		}
+		
+		public long getItemSoundId(int position) {
+			return mSequenceItems.get(position).getSoundResourceId();
 		}
 
 		public View getView(final int position, View convertView, ViewGroup parent) {
@@ -93,36 +102,44 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			
 		    imageView.setOnClickListener(new OnClickListener() {  //Play the sound associated with the object.
 				public void onClick(View v) {
-					synchronized(this){
-						while(itemIter.hasNext()){
-							LoadNextSound();
-							currentSound.play();
-							
-							
-//							//mPlayer = MediaPlayer.create(mContext, itemIter.next().getSoundResourceId());
-//							resId = itemIter.next().getSoundResourceId();
-//							
-//							
-//							soundPlayer = new SoundBoardPlayer(mContext, soundLocation);
-//							soundPlayer.play();
-						}
+					
+					//Get an iterator for the Sequence Bar
+					seqIter = mSequenceItems.iterator();
+					
+					//Check if the player is already being used. If it is stop it and release it.
+					if (mPlayer != null){
+				        if(mPlayer.isPlaying()){
+				            mPlayer.stop();
+				        }
+				        mPlayer.release();
 					}
-					itemIter = mSequenceItems.iterator(); //Reset the iterator
+					LoadNextSound();
 				}
 			});
 
 			return imageView;
 		}
 		
-		public void LoadNextSound(){
-			if (currentSound != null){
-				currentSound.dispose();
+		public void LoadNextSound(){			
+			if (seqIter.hasNext()){
+				SoundBoardItem item = seqIter.next();
+				mPlayer = MediaPlayer.create(mContext, getUriForId(item.getSoundResourceId()));
+				mPlayer.setOnCompletionListener(mListener);
+				mPlayer.start();
+				Toast.makeText(mContext, item.getDescription(), Toast.LENGTH_SHORT).show();
 			}
-			SoundBoardItem item = itemIter.next();
-			currentSound = new SoundBoardPlayer(mContext, getUriForId(item.getSoundResourceId()));
-			Toast.makeText(mContext, "Loaded: " + item.getDescription(), Toast.LENGTH_SHORT).show();
-	
 		}
+		
+		
+//		public void LoadNextSound(){
+//			if (currentSound != null){
+//				currentSound.dispose();
+//			}
+//			SoundBoardItem item = itemIter.next();
+//			currentSound = new SoundBoardPlayer(mContext, getUriForId(item.getSoundResourceId()));
+//			Toast.makeText(mContext, "Loaded: " + item.getDescription(), Toast.LENGTH_SHORT).show();
+//	
+//		}
 		
 		public Uri getUriForId(int resId){
 			return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
@@ -130,6 +147,11 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 					resources.getResourceTypeName(resId) + '/' +
 					resources.getResourceEntryName(resId) );
 			
+		}
+
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 }
 

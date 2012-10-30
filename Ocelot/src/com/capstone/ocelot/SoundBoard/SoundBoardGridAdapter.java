@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class SoundBoardGridAdapter extends BaseAdapter {
 	private Context mContext;
@@ -60,6 +61,7 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 					MediaPlayer mp = MediaPlayer.create(mContext, mSoundBoardItems.get(position).getSoundResourceId());
+					Toast.makeText(mContext, mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
 					mp.start();
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
