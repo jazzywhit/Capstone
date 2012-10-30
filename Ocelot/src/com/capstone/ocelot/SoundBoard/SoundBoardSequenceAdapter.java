@@ -31,7 +31,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		
 		OnCompletionListener mListener = new OnCompletionListener() {
 		    public void onCompletion(MediaPlayer mp) {
-		        //mp.release();
 		    	LoadNextSound();
 		    }
 		};
@@ -40,14 +39,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			this.mSequenceItems = mSequenceItems;
 			mContext = c;
 			resources = mContext.getResources();
-			
-			//TypedArray a = c.obtainStyledAttributes(R.styleable.Gallery1);
-	        //mGalleryItemBackground = a.getResourceId(R.styleable.Gallery1_android_galleryItemBackground, 0);
-	        //a.recycle();
-//			mGalleryItemBackground = a.getResourceId(
-//			         R.styleable.Theme_android_galleryItemBackground,
-//			                   0);
-//			a.recycle();
 		}
 
 		public int getCount() {
@@ -70,29 +61,10 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			
 			ImageView imageView = new ImageView(mContext);
 			
-			
-//			if (convertView == null) {  // if it's not recycled, initialize some attributes
-//				imageView = new ImageView(mContext);
-//				imageView.setLayoutParams(new ScrollView.LayoutParams(parent.getWidth()/4, parent.getWidth()/4));
-//				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//				imageView.setPadding(20, 20, 20, 20);
-//			} else {
-//				imageView = (ImageView) convertView;
-//			}
-			
-//			i.setImageBitmap(BitmapFactory.decodeFile(mImageIds[position]));
-//	        i.setScaleType(ImageView.ScaleType.FIT_XY);
-//	        i.setBackgroundResource(mGalleryItemBackground);
-
-			//ScrollView.LayoutParams layoutParams = new ScrollView.LayoutParams(150, 150);
-			
 			if (convertView == null) {  // if it's not recycled, initialize some attributes
 				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 				imageView.setLayoutParams(new Gallery.LayoutParams(150, 150));
 				imageView.setPadding(20, 20, 20, 20);
-				//imageView.setLayoutParams(new ScrollView.LayoutParams(parent.getWidth()/4, parent.getWidth()/4));
-				//imageView.setLayoutParams(layoutParams);
-				//imageView.setBackgroundResource(mGalleryItemBackground)
 			} else {
 				imageView = (ImageView) convertView;
 			}
@@ -127,19 +99,10 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 				mPlayer.setOnCompletionListener(mListener);
 				mPlayer.start();
 				Toast.makeText(mContext, item.getDescription(), Toast.LENGTH_SHORT).show();
+			} else {
+				mPlayer.release();
 			}
 		}
-		
-		
-//		public void LoadNextSound(){
-//			if (currentSound != null){
-//				currentSound.dispose();
-//			}
-//			SoundBoardItem item = itemIter.next();
-//			currentSound = new SoundBoardPlayer(mContext, getUriForId(item.getSoundResourceId()));
-//			Toast.makeText(mContext, "Loaded: " + item.getDescription(), Toast.LENGTH_SHORT).show();
-//	
-//		}
 		
 		public Uri getUriForId(int resId){
 			return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
@@ -154,24 +117,3 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			return 0;
 		}
 }
-
-
-//return imageView;
-
-//View rowView = LayoutInflater
-//		.from(parent.getContext())
-//		.inflate(R.layout.row, parent, false);
-//
-//LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
-
-//ImageView imageView = (ImageView)rowView.findViewById(R.id.seqimage);
-//imageView.setImageResource(mSequenceItems.get(position).getIconResourceId());
-//imageView.setLayoutParams(layoutParams);
-//imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//imageView.setPadding(0, 0, 0, 0);
-
-//TextView listTextView = (TextView)rowView.findViewById(R.id.itemtext);
-//listTextView.setText(mSequenceItems.get(position).getDescription());
-
-//iv.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
-//iv.setScaleType(ScaleType.FIT_CENTER);

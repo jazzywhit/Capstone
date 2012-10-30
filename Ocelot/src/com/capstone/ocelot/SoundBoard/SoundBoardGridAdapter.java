@@ -91,13 +91,6 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				return false;
 			}
 		});
-
-		//	    imageView.setOnClickListener(new OnClickListener() {  //Play the sound associated with the object.
-		//			public void onClick(View v) {
-		//				MediaPlayer mp = MediaPlayer.create(mContext, mSoundBoardItems.get(position).getSoundResourceId());
-		//	        	mp.start();
-		//			}
-		//		});
 		return imageView;
 	}
 
