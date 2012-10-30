@@ -24,7 +24,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		ArrayList<SoundBoardItem> mSequenceItems;
 		int mGalleryItemBackground;
 		boolean isPrepared = false;
-		//SoundBoardPlayer currentSound;
 		MediaPlayer mPlayer;
 		Iterator<SoundBoardItem> seqIter;
 		Resources resources;
@@ -80,6 +79,7 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 				public void onClick(View v) {
 					
 					//Get an iterator for the Sequence Bar
+					//TODO ((Gallery) sequenceView).setSelection(position) //Set it to position 0
 					seqIter = mSequenceItems.iterator();
 					LoadNextSound();
 				}
@@ -88,8 +88,9 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			return imageView;
 		}
 		
-		public void LoadNextSound(){			
+		public void LoadNextSound(){
 			if (seqIter.hasNext()){
+		    	//TODO ((Gallery) sequenceView).setSelection(position) //Increment the position by 1 each time.
 				SoundBoardItem item = seqIter.next();
 				mPlayer = MediaPlayer.create(mContext, getUriForId(item.getSoundResourceId()));
 				mPlayer.setOnCompletionListener(mListener);

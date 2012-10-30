@@ -25,10 +25,15 @@ import com.capstone.ocelot.SoundBoard.SoundBoardSequenceAdapter;
 
 @SuppressWarnings("deprecation")
 public class Default extends Activity {
+	
 	ArrayList<SoundBoardItem> mGridItems;
 	ArrayList<SoundBoardItem> mSequenceItems;
-	View sequenceView;
-	View gridView;
+	
+	static Gallery sequenceView;
+	static GridView gridView;
+	
+	public SoundBoardItem currentItem;
+	SoundBoardSequenceAdapter seqAdapter;
 	
     //TODO Rename all the classes to better explain their function
 	/** Called when the activity is first created. */
@@ -53,7 +58,8 @@ public class Default extends Activity {
 	    //Setup the sequence adapter
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
 		sequenceView = (Gallery) findViewById(R.id.seqgallery);
-		((Gallery) sequenceView).setAdapter(new SoundBoardSequenceAdapter(this, mSequenceItems));
+		seqAdapter = new SoundBoardSequenceAdapter(this, mSequenceItems);
+		((Gallery) sequenceView).setAdapter(seqAdapter);
 		sequenceView.setOnDragListener(new MyDragListener());
 	   
 	    
@@ -65,12 +71,14 @@ public class Default extends Activity {
     	//int width = metrics.widthPixels;
 	}
 	
+	
+	
 	class MyDragListener implements OnDragListener {
 //	    Drawable enterShape = getResources().getDrawable(R.drawable.shape_droptarget);
 //	    Drawable normalShape = getResources().getDrawable(R.drawable.shape);
 
 		public boolean onDrag(View v, DragEvent event) {
-			Log.v("log_tag", event.toString());
+			//Log.v("log_tag", event.toString());
 			switch (event.getAction()) {
 	//		      case DragEvent.ACTION_DRAG_STARTED:
 	//		        // Do nothing
@@ -91,6 +99,10 @@ public class Default extends Activity {
 	//		        view.setVisibility(View.VISIBLE);
 		    	//Toast.makeText(mContext, "ACTION DROP", Toast.LENGTH_SHORT).show();
 					Log.v("log_tag", v.toString());
+					//TODO This is a hack. The data should always be gathered from the same location. It is now represented in the Activity and the Adapters.
+					seqAdapter.addItem(mSequenceItems.get(0));
+					((Gallery) sequenceView).setAdapter(seqAdapter);
+					//sequenceView.invalidate();
 				break;
 	//		      case DragEvent.ACTION_DRAG_ENDED:
 	//		        v.setBackgroundDrawable(normalShape);

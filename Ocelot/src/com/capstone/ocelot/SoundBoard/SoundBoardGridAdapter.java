@@ -21,7 +21,7 @@ import android.widget.Toast;
 public class SoundBoardGridAdapter extends BaseAdapter {
 	private Context mContext;
 	private ArrayList<SoundBoardItem> mSoundBoardItems = null;
-	public SoundBoardItem currentItem;
+	static public SoundBoardItem currentItem;
 
 	public SoundBoardGridAdapter(Context c, ArrayList<SoundBoardItem> mSoundBoardItems) {
 		mContext = c;
@@ -61,29 +61,31 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 //				Log.v("log_tag", view.toString());
 
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-					currentItem = mSoundBoardItems.get(position); //Set the accessible item
+					currentItem = mSoundBoardItems.get(position);
 					MediaPlayer mp = MediaPlayer.create(mContext, mSoundBoardItems.get(position).getSoundResourceId());
-					Toast.makeText(mContext, mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
+					//Toast.makeText(mContext, mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
 					mp.start();
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
-					view.setVisibility(View.INVISIBLE);
+					//view.setVisibility(View.INVISIBLE);
 					ClipData data = ClipData.newPlainText("", "");
 					DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
 					view.startDrag(data, shadowBuilder, view, 0);
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
-					view.setVisibility(View.VISIBLE);
+					//view.setVisibility(View.VISIBLE);
 					return true;
 				} else {
 					return false;
 				}
 			}
 		});
+		
 		imageView.setOnDragListener(new OnDragListener(){
-			public boolean onDrag(View view, DragEvent dragEvent) {
-				Log.v("log_tag", dragEvent.toString());
+			public boolean onDrag(View view, DragEvent dragEvent) {	
 				if (dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED){
+					Log.v("log_tag", dragEvent.toString());
+					currentItem = mSoundBoardItems.get(position);
 					//view.setVisibility(View.INVISIBLE);
 					return true;
 				} else if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED){
@@ -93,6 +95,7 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				return false;
 			}
 		});
+		
 		return imageView;
 	}
 }
