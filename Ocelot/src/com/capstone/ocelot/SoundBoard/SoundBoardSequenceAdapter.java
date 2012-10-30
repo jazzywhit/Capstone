@@ -44,6 +44,10 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		public int getCount() {
 			return mSequenceItems.size();
 		}
+		
+		public void addItem(SoundBoardItem item){
+			mSequenceItems.add(item);
+		}
 
 		public Object getItem(int position) {
 			return mSequenceItems.get(position);
@@ -77,14 +81,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 					
 					//Get an iterator for the Sequence Bar
 					seqIter = mSequenceItems.iterator();
-					
-					//Check if the player is already being used. If it is stop it and release it.
-					if (mPlayer != null){
-				        if(mPlayer.isPlaying()){
-				            mPlayer.stop();
-				        }
-				        mPlayer.release();
-					}
 					LoadNextSound();
 				}
 			});

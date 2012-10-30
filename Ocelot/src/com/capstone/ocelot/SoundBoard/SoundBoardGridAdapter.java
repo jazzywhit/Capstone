@@ -21,6 +21,7 @@ import android.widget.Toast;
 public class SoundBoardGridAdapter extends BaseAdapter {
 	private Context mContext;
 	private ArrayList<SoundBoardItem> mSoundBoardItems = null;
+	public SoundBoardItem currentItem;
 
 	public SoundBoardGridAdapter(Context c, ArrayList<SoundBoardItem> mSoundBoardItems) {
 		mContext = c;
@@ -56,10 +57,11 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		imageView.setOnTouchListener(new OnTouchListener(){
 
 			public boolean onTouch(View view, MotionEvent motionEvent) {
-				Log.v("log_tag", motionEvent.toString());
-				Log.v("log_tag", view.toString());
+//				Log.v("log_tag", motionEvent.toString());
+//				Log.v("log_tag", view.toString());
 
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+					currentItem = mSoundBoardItems.get(position); //Set the accessible item
 					MediaPlayer mp = MediaPlayer.create(mContext, mSoundBoardItems.get(position).getSoundResourceId());
 					Toast.makeText(mContext, mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
 					mp.start();
@@ -93,78 +95,4 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		});
 		return imageView;
 	}
-
-	//Touch Listener to interact with the SoundBoardItems
-	//	private class MyTouchListener implements OnTouchListener {
-	//	    public boolean onTouch(View view, MotionEvent motionEvent) {
-	//	      if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-	//	        ClipData data = ClipData.newPlainText("", "");
-	//	        DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-	//	        view.startDrag(data, shadowBuilder, view, 0);
-	//	        //view.setVisibility(View.INVISIBLE);
-	//	        return true;
-	//	      } else {
-	//	        return false;
-	//	      }
-	//	    }
-	//	}
-
-	//	private class MyTouchListener implements OnTouchListener {
-	//	    public boolean onTouch(View v, MotionEvent event) {
-	//	        // TODO Auto-generated method stub
-	//	
-	//	        if(event.getAction() == MotionEvent.ACTION_DOWN)
-	//	        {
-	//	            v.setBackgroundResource(R.drawable.chicken); //Will need to create a drop shadow for this.
-	//	            Log.v("log_tag", "MotionEvent.ACTION_DOWN");
-	//	            MediaPlayer mp = MediaPlayer.create(mContext, mSoundBoardItems.get(position).getSoundResourceId());
-	//	            mp.start();
-	//	            return true;
-	//	        }
-	//	        else if(event.getAction()==MotionEvent.ACTION_UP)
-	//	        {
-	//	
-	//	            //v.setBackgroundDrawable(null); 
-	//	            Log.v("log_tag", "MotionEvent.ACTION_UP");
-	//	            return true; 
-	//	        }
-	//	        return false;
-	//	    }
-	//	}
-
-	// create a new ImageView for each item referenced by the Adapter
-	//    public View getView(int position, View convertView, ViewGroup parent) {
-	//        ImageView imageView;
-	//        if (convertView == null) {  // if it's not recycled, initialize some attributes
-	//            imageView = new ImageView(mContext);
-	//            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-	//            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-	//            imageView.setPadding(8, 8, 8, 8);
-	//        } else {
-	//            imageView = (ImageView) convertView;
-	//        }
-	//
-	//        imageView.setImageResource(mSoundBoardItems.get([position));
-	//        imageView.setOnTouchListener(new OnTouchListener() {
-	//
-	//            @Override
-	//            public boolean onTouch(View v, MotionEvent event) {
-	//                // TODO Auto-generated method stub
-	//
-	//                if(event.getAction() == MotionEvent.ACTION_DOWN)
-	//                {
-	//                    v.setBackgroundResource(R.drawable.sample_0);
-	//                    Log.v("log_tag", "MotionEvent.ACTION_DOWN");
-	//                    return true;
-	//                }
-	//                else if(event.getAction()==MotionEvent.ACTION_UP)
-	//                {
-	//                    Log.v("log_tag", "MotionEvent.ACTION_UP");
-	//                    return true; 
-	//                }
-	//                return false;
-	//            }
-	//        });
-	//        return imageView;
-	//    }
 }
