@@ -1,16 +1,11 @@
-package com.capstone.ocelot.SoundBoard;
-
-import java.util.ArrayList;
+package com.capstone.ocelot.SoundBoardActivities;
 
 import android.content.ClipData;
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
-import android.view.View.OnDragListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,26 +13,29 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.capstone.ocelot.SoundBoardActivity;
+
 public class SoundBoardGridAdapter extends BaseAdapter {
 	private Context mContext;
-	private ArrayList<SoundBoardItem> mSoundBoardItems = null;
-	static public SoundBoardItem currentItem;
 
-	public SoundBoardGridAdapter(Context c, ArrayList<SoundBoardItem> mSoundBoardItems) {
+	public SoundBoardGridAdapter(Context c) {
 		mContext = c;
-		this.mSoundBoardItems = mSoundBoardItems;
 	}
 
 	public int getCount() {
-		return mSoundBoardItems.size();
+		return ((SoundBoardActivity)mContext).getGridSize();
 	}
 
 	public Object getItem(int position) {
-		return mSoundBoardItems.get(position);
+		return ((SoundBoardActivity)mContext).getGridItem(position);
 	}
 
 	public long getItemId(int position) {
 		return 0;
+	}
+	
+	public void setCurrentItem(SoundBoardItem item){
+		((SoundBoardActivity)mContext).setCurrentItem(item);
 	}
 
 	// create a new ImageView for each item referenced by the Adapter
@@ -53,46 +51,28 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 			imageView = (ImageView) convertView;
 		}
 
-		imageView.setImageResource(mSoundBoardItems.get(position).getIconResourceId());
+		imageView.setImageResource(((SoundBoardItem) getItem(position)).getIconResourceId());
 		imageView.setOnTouchListener(new OnTouchListener(){
 
 			public boolean onTouch(View view, MotionEvent motionEvent) {
-//				Log.v("log_tag", motionEvent.toString());
-//				Log.v("log_tag", view.toString());
-
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-					currentItem = mSoundBoardItems.get(position);
-					MediaPlayer mp = MediaPlayer.create(mContext, mSoundBoardItems.get(position).getSoundResourceId());
-					//Toast.makeText(mContext, mSoundBoardItems.get(position).getDescription(), Toast.LENGTH_SHORT).show();
+					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
+					MediaPlayer mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
+					Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
 					mp.start();
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
-					//view.setVisibility(View.INVISIBLE);
+					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
+					setCurrentItem(touchItem);
 					ClipData data = ClipData.newPlainText("", "");
 					DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
 					view.startDrag(data, shadowBuilder, view, 0);
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
-					//view.setVisibility(View.VISIBLE);
 					return true;
 				} else {
 					return false;
 				}
-			}
-		});
-		
-		imageView.setOnDragListener(new OnDragListener(){
-			public boolean onDrag(View view, DragEvent dragEvent) {	
-				if (dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED){
-					Log.v("log_tag", dragEvent.toString());
-					currentItem = mSoundBoardItems.get(position);
-					//view.setVisibility(View.INVISIBLE);
-					return true;
-				} else if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED){
-					//view.setVisibility(View.VISIBLE);
-					return true;
-				}
-				return false;
 			}
 		});
 		
