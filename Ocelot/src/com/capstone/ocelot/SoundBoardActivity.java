@@ -38,6 +38,7 @@ public class SoundBoardActivity extends Activity {
 	SoundBoardItem mCurrentItem;
 	Iterator<SoundBoardItem> sequenceIterator;
 	MediaPlayer mPlayer;
+	int currentLocation = 0;
 	
 	Gallery sequenceView;
 	GridView gridView;
@@ -73,7 +74,9 @@ public class SoundBoardActivity extends Activity {
 		sequenceView.setOnItemClickListener(new OnItemClickListener() {  //Play the sound associated with the object.
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				sequenceView.setSelection(0);
+				currentLocation = 0;
+				sequenceView.setSelection(currentLocation);
+				sequenceView.invalidate();
 				sequenceIterator = mSequenceItems.iterator();
 				LoadNextSound();
 			}
@@ -125,7 +128,6 @@ public class SoundBoardActivity extends Activity {
 	
 	public void setCurrentItem(SoundBoardItem currentItem){
 		mCurrentItem = currentItem;
-		Toast.makeText(getBaseContext(), "Current Item: " + mCurrentItem.getDescription(), Toast.LENGTH_SHORT).show();
 	}
 	
 	public SoundBoardItem getCurrentItem(){
@@ -134,9 +136,18 @@ public class SoundBoardActivity extends Activity {
 	
 	OnCompletionListener MyCompletionListener = new OnCompletionListener() {
 	    public void onCompletion(MediaPlayer mp) {
+	    	AdvanceCurrentLocation();
 	    	LoadNextSound();
 	    }
 	};
+	
+	public void AdvanceCurrentLocation(){
+		if (currentLocation < mSequenceItems.size() - 1){
+			currentLocation++;
+			sequenceView.setSelection(currentLocation);
+			sequenceView.invalidate();
+		}		
+	}
 	
 	class MyDragListener implements OnDragListener {
 //	    Drawable enterShape = getResources().getDrawable(R.drawable.shape_droptarget);
@@ -190,11 +201,9 @@ public class SoundBoardActivity extends Activity {
 	public void LoadNextSound(){
 		if (sequenceIterator.hasNext()){
 			SoundBoardItem item = sequenceIterator.next();
-			//sequenceView.setSelection(sequenceView.getSelectedItemPosition() + 1); //Advance the view by 1
 			mPlayer = MediaPlayer.create(getBaseContext(), getUriForId(item.getSoundResourceId()));
 			mPlayer.setOnCompletionListener(MyCompletionListener);
 			mPlayer.start();
-			//Toast.makeText(getBaseContext(), item.getDescription(), Toast.LENGTH_SHORT).show();
 		} else {
 			mPlayer.release();
 		}
