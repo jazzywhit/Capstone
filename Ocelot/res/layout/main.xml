@@ -36,6 +36,7 @@
         android:orientation="vertical" >
           <ScrollView
               android:id="@+id/seqscrollview"
+              android:background="@drawable/my_border"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent" >
               <Gallery
@@ -44,9 +45,7 @@
                   android:layout_height="fill_parent" >
               </Gallery>
           </ScrollView>
-
     </LinearLayout>
-
 </RelativeLayout>
 
 <!--
