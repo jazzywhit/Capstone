@@ -16,9 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Gallery;
@@ -73,8 +71,13 @@ public class SoundBoardActivity extends Activity {
 		sequenceView.setOnItemClickListener(new OnItemClickListener() {  //Play the sound associated with the object.
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				sequenceView.setSelection(0);
+				sequenceView.setSelection(0); //reset the selection
+				sequenceView.invalidate();
 				sequenceIterator = mSequenceItems.iterator();
+				if(mPlayer.isPlaying()){
+					mPlayer.stop();
+					mPlayer.release();
+				}
 				LoadNextSound();
 			}
 		});	   
@@ -190,11 +193,9 @@ public class SoundBoardActivity extends Activity {
 	public void LoadNextSound(){
 		if (sequenceIterator.hasNext()){
 			SoundBoardItem item = sequenceIterator.next();
-			//sequenceView.setSelection(sequenceView.getSelectedItemPosition() + 1); //Advance the view by 1
 			mPlayer = MediaPlayer.create(getBaseContext(), getUriForId(item.getSoundResourceId()));
 			mPlayer.setOnCompletionListener(MyCompletionListener);
 			mPlayer.start();
-			//Toast.makeText(getBaseContext(), item.getDescription(), Toast.LENGTH_SHORT).show();
 		} else {
 			mPlayer.release();
 		}

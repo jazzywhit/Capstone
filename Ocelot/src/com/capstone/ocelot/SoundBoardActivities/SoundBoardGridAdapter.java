@@ -3,6 +3,7 @@ package com.capstone.ocelot.SoundBoardActivities;
 import android.content.ClipData;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capstone.ocelot.SoundBoardActivity;
@@ -41,18 +43,26 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 	// create a new ImageView for each item referenced by the Adapter
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
-		ImageView imageView;
+		View view;
 		if (convertView == null) {  // if it's not recycled, initialize some attributes
-			imageView = new ImageView(mContext);
-			imageView.setLayoutParams(new GridView.LayoutParams(150, 150));
-			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			imageView.setPadding(8, 8, 8, 8);
+			LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
+			SoundBoardItem viewItem = (SoundBoardItem) getItem(position);
+			view = li.inflate(0x7f030000, null);
+			TextView tv = (TextView)view.findViewById(0x7f080002); //android.R.id.icon_text
+			tv.setText(viewItem.getDescription());
+			ImageView iv = (ImageView)view.findViewById(0x7f080001); //android.R.id.icon_image
+			iv.setImageResource(viewItem.getIconResourceId());
+			
+			//view = new ImageView(mContext);
+			view.setLayoutParams(new GridView.LayoutParams(150, 150));
+			//view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			view.setPadding(8, 8, 8, 8);
+			//view.setImageResource(viewItem.getIconResourceId());
 		} else {
-			imageView = (ImageView) convertView;
+			view = convertView;
 		}
 
-		imageView.setImageResource(((SoundBoardItem) getItem(position)).getIconResourceId());
-		imageView.setOnTouchListener(new OnTouchListener(){
+		view.setOnTouchListener(new OnTouchListener(){
 
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -76,6 +86,6 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 			}
 		});
 		
-		return imageView;
+		return view;
 	}
 }

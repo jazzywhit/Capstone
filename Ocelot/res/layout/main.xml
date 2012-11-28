@@ -25,7 +25,6 @@
         android:numColumns="auto_fit"
         android:stretchMode="spacingWidthUniform"
         android:verticalSpacing="40dp" >
-
     </GridView>
     
     <LinearLayout
@@ -35,12 +34,10 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:orientation="vertical" >
-
           <ScrollView
               android:id="@+id/seqscrollview"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent" >
-
               <Gallery
                   android:id="@+id/seqgallery"
                   android:layout_width="fill_parent"
