@@ -57,7 +57,7 @@ public class SoundBoardActivity extends Activity {
 		//Setup the gridview adapter
 		//TODO This might be better done through a page view for scrolling the images.
 		gridView = (GridView) findViewById(R.id.gridview);
-		((GridView) gridView).setAdapter(new SoundBoardGridAdapter(this));
+		gridView.setAdapter(new SoundBoardGridAdapter(this));
 	    
 		//Set and load the soundboardItems
 		//TODO This will need to be extended so that we can load from a database!
@@ -66,8 +66,8 @@ public class SoundBoardActivity extends Activity {
 	    //Setup the sequence adapter
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
 		sequenceView = (Gallery) findViewById(R.id.seqgallery);
-		seqAdapter = new SoundBoardSequenceAdapter(this);
-		((Gallery) sequenceView).setAdapter(seqAdapter);
+		seqAdapter = new SoundBoardSequenceAdapter(this); //TODO There must be a better way to update the adapter than having a global
+		sequenceView.setAdapter(seqAdapter);
 		sequenceView.setOnDragListener(new MyDragListener());
 		sequenceView.setOnItemClickListener(new OnItemClickListener() {  //Play the sound associated with the object.
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -76,10 +76,10 @@ public class SoundBoardActivity extends Activity {
 				sequenceView.setSelection(currentLocation);
 				sequenceView.invalidate();
 				sequenceIterator = mSequenceItems.iterator();
-				if(mPlayer.isPlaying()){
-					mPlayer.stop();
-					mPlayer.release();
-				}
+//				if(mPlayer.isPlaying()){ //TODO This might be necessary, but until this is fixed it crashes the program
+//					mPlayer.stop();
+//					mPlayer.release();
+//				}
 				LoadNextSound();
 			}
 		});	   

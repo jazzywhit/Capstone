@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,17 +47,19 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		View view;
 		if (convertView == null) {  // if it's not recycled, initialize some attributes
 			LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
-			SoundBoardItem viewItem = (SoundBoardItem) getItem(position);
-			view = li.inflate(0x7f030000, null);
-			TextView tv = (TextView)view.findViewById(0x7f080002); //android.R.id.icon_text
+			SoundBoardItem viewItem = (SoundBoardItem) getItem(position); 
+			view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
+			TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
 			tv.setText(viewItem.getDescription());
-			ImageView iv = (ImageView)view.findViewById(0x7f080001); //android.R.id.icon_image
+			ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
 			iv.setImageResource(viewItem.getIconResourceId());
+//			LinearLayout lv = (LinearLayout)view.findViewById(com.capstone.ocelot.R.id.widget44); //TODO give this a better name
+//			lv.setLayoutParams(new LinearLayout.LayoutParams(150,150));
 			
 			//view = new ImageView(mContext);
-			view.setLayoutParams(new GridView.LayoutParams(150, 150));
+			//view.setLayoutParams(new GridView.LayoutParams(150, 150));
 			//view.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			view.setPadding(8, 8, 8, 8);
+			//view.setPadding(8, 8, 8, 8);
 			//view.setImageResource(viewItem.getIconResourceId());
 		} else {
 			view = convertView;
@@ -68,7 +71,7 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
 					MediaPlayer mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
-					Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
+					//Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
 					mp.start();
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
