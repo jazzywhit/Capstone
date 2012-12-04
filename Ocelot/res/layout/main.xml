@@ -15,33 +15,28 @@
         android:id="@+id/gridview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/sequence_linearlayout"
+        android:layout_above="@+id/seqscrollview"
         android:columnWidth="200dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="50dp"
-        android:horizontalSpacing="50dp" >
+        android:verticalSpacing="40dp"
+        android:horizontalSpacing="40dp" >
     </GridView>
     
-    <LinearLayout
-        android:id="@+id/sequence_linearlayout"
+    <ScrollView
+        android:id="@+id/seqscrollview"
+        android:background="@drawable/my_border"
         android:layout_width="fill_parent"
         android:layout_height="200dp"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical" >
-          <ScrollView
-              android:id="@+id/seqscrollview"
-              android:background="@drawable/my_border"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent" >
-              <Gallery
-                  android:id="@+id/seqgallery"
-                  android:layout_width="fill_parent"
-                  android:layout_height="fill_parent" >
-              </Gallery>
-          </ScrollView>
-    </LinearLayout>
+        android:layout_alignParentRight="true" >
+        <Gallery
+            android:id="@+id/seqgallery"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </Gallery>
+    </ScrollView>
 </RelativeLayout>
 
 <!--
