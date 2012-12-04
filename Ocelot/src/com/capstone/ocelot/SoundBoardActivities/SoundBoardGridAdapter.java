@@ -2,6 +2,11 @@ package com.capstone.ocelot.SoundBoardActivities;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -48,11 +53,44 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		if (convertView == null) {  // if it's not recycled, initialize some attributes
 			LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
 			SoundBoardItem viewItem = (SoundBoardItem) getItem(position); 
-			view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
-			TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
-			tv.setText(viewItem.getDescription());
-			ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
-			iv.setImageResource(viewItem.getIconResourceId());
+			
+			if(viewItem.getHasImage()) {
+				view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
+				
+				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
+				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
+				
+				iv.setImageResource(viewItem.getIconResourceId());
+				tv.setText(viewItem.getDescription());
+			} else {
+				view = li.inflate(com.capstone.ocelot.R.layout.gridicontext, null);
+				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image_text);
+				
+				Paint paint = new Paint();
+				paint.setStyle(Paint.Style.FILL);
+				paint.setColor(Color.RED);
+				paint.setTextSize(20);
+				paint.setAntiAlias(true);
+				paint.setTypeface(Typeface.MONOSPACE);
+				
+				Bitmap bm = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
+				@SuppressWarnings("unused")
+				float x = bm.getWidth(); 
+				@SuppressWarnings("unused")
+				float y = bm.getHeight();
+				Canvas c = new Canvas(bm);
+				c.drawText(viewItem.getDescription(), 0, 100, paint);
+				
+				//tv.setText(viewItem.getDescription());
+				
+//				tv.setDrawingCacheEnabled(true);
+//				tv.destroyDrawingCache();
+//				tv.buildDrawingCache();
+//				Bitmap bitmap = getTransparentBitmapCopy(tv.getDrawingCache());
+				
+				iv.setImageBitmap(bm);
+			}
+			
 //			LinearLayout lv = (LinearLayout)view.findViewById(com.capstone.ocelot.R.id.widget44); //TODO give this a better name
 //			lv.setLayoutParams(new LinearLayout.LayoutParams(150,150));
 			
@@ -70,9 +108,15 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-					MediaPlayer mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
-					//Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
-					mp.start();
+					
+					//If no sound present, just show the text
+					if (touchItem.getHasSound()){
+						MediaPlayer mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
+						mp.start();
+					} else {
+						Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
+					}
+					
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
 					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
@@ -90,5 +134,15 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		});
 		
 		return view;
+	}
+
+	private Bitmap getTransparentBitmapCopy(Bitmap drawingCache) {
+	    int width =  drawingCache.getWidth();
+	    int height = drawingCache.getHeight();
+	    Bitmap copy = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+	    int[] pixels = new int[width * height];
+	    drawingCache.getPixels(pixels, 0, width, 0, 0, width, height);
+	    copy.setPixels(pixels, 0, width, 0, 0, width, height);
+	    return copy;
 	}
 }

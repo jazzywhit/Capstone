@@ -1,15 +1,22 @@
 package com.capstone.ocelot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
+import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
@@ -28,8 +35,9 @@ import com.capstone.ocelot.SoundBoardActivities.SoundBoardItem;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardSequenceAdapter;
 
 
+@TargetApi(15)
 @SuppressWarnings("deprecation")
-public class SoundBoardActivity extends Activity {
+public class SoundBoardActivity extends Activity implements OnInitListener{
 	
 	ArrayList<SoundBoardItem> mGridItems;
 	ArrayList<SoundBoardItem> mSequenceItems;
@@ -37,6 +45,37 @@ public class SoundBoardActivity extends Activity {
 	Iterator<SoundBoardItem> sequenceIterator;
 	MediaPlayer mPlayer;
 	int currentLocation = 0;
+	int MY_DATA_CHECK_CODE = 0;
+	
+	String userName = "Jesse";
+	
+	
+//	Intent checkIntent = new Intent();
+//	checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+//	startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+	
+	private TextToSpeech ttsPlayer;
+	
+//	protected void onActivityResult(
+//	        int requestCode, int resultCode, Intent data) {
+//	    if (requestCode == MY_DATA_CHECK_CODE) {
+//	        if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+//	            // success, create the TTS instance
+//	            ttsPlayer = new TextToSpeech(this, (OnInitListener) this);
+//	        } else {
+//	            // missing data, install it
+//	            Intent installIntent = new Intent();
+//	            installIntent.setAction(
+//	                TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+//	            startActivity(installIntent);
+//	        }
+//	    }
+//	}
+	
+	public void onInit(int status) {
+		// TODO Auto-generated method stub
+		ttsPlayer.speak("Are you ready to play " + userName + "?", TextToSpeech.QUEUE_FLUSH, null);
+	}
 	
 	Gallery sequenceView;
 	GridView gridView;
@@ -49,6 +88,10 @@ public class SoundBoardActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		//Text To Speech Player
+		ttsPlayer = new TextToSpeech(this, this);
+		ttsPlayer.setOnUtteranceProgressListener(TTSProgressListener);
 		
 		//Set and load the soundboardItems
 		//TODO This will need to be extended so that we can load from a database!
@@ -136,11 +179,35 @@ public class SoundBoardActivity extends Activity {
 		return mCurrentItem;
 	}
 	
-	OnCompletionListener MyCompletionListener = new OnCompletionListener() {
+	OnCompletionListener MediaCompletionListener = new OnCompletionListener() {
 	    public void onCompletion(MediaPlayer mp) {
 	    	AdvanceCurrentLocation();
 	    	LoadNextSound();
 	    }
+	};
+	
+	
+	//TODO Get this working properly.
+	UtteranceProgressListener TTSProgressListener = new UtteranceProgressListener(){
+
+		@Override
+		public void onStart(String utteranceId) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onDone(String utteranceId) {
+			AdvanceCurrentLocation();
+	    	LoadNextSound();
+		}
+
+		@Override
+		public void onError(String utteranceId) {
+			// TODO Auto-generated method stub
+			
+		}
+
 	};
 	
 	public void AdvanceCurrentLocation(){
@@ -152,38 +219,12 @@ public class SoundBoardActivity extends Activity {
 	}
 	
 	class MyDragListener implements OnDragListener {
-//	    Drawable enterShape = getResources().getDrawable(R.drawable.shape_droptarget);
-//	    Drawable normalShape = getResources().getDrawable(R.drawable.shape);
-
 		public boolean onDrag(View v, DragEvent event) {
-			Log.v("log_tag", event.toString());
-			
 			switch (event.getAction()) {
-	//		      case DragEvent.ACTION_DRAG_STARTED:
-	//		        // Do nothing
-	//		        break;
-	//		      case DragEvent.ACTION_DRAG_ENTERED:
-	//		        v.setBackgroundDrawable(enterShape);
-	//		        break;
-	//		      case DragEvent.ACTION_DRAG_EXITED:
-	//		        v.setBackgroundDrawable(normalShape);
-	//		        break;
 			case DragEvent.ACTION_DROP:
-    //		       	Dropped, reassign View to ViewGroup
-	//		        View view = (View) event.getLocalState();
-	//		        ViewGroup owner = (ViewGroup) view.getParent();
-	//		        owner.removeView(view);
-	//		        LinearLayout container = (LinearLayout) v;
-	//		        container.addView(view);
-	//		        view.setVisibility(View.VISIBLE);
 					mSequenceItems.add(mCurrentItem);
-					//ViewGroup vg = (ViewGroup) findViewById(R.id.seqgallery);
-					//vg.invalidate();
 					((Gallery) sequenceView).setAdapter(seqAdapter);
-					//sequenceView.invalidate();
 				break;
-	//		      case DragEvent.ACTION_DRAG_ENDED:
-	//		        v.setBackgroundDrawable(normalShape);
 			default:
 				break;
 	      }
@@ -200,14 +241,33 @@ public class SoundBoardActivity extends Activity {
 //                    gallery.setSelection(PicPosition);//move to the next gallery element.
 //    }
 	
+	@TargetApi(15)
 	public void LoadNextSound(){
+		SoundBoardItem item = new SoundBoardItem(null);
+		
 		if (sequenceIterator.hasNext()){
-			SoundBoardItem item = sequenceIterator.next();
-			mPlayer = MediaPlayer.create(getBaseContext(), getUriForId(item.getSoundResourceId()));
-			mPlayer.setOnCompletionListener(MyCompletionListener);
-			mPlayer.start();
+			item = sequenceIterator.next();
+			if (item.getHasSound()){
+				mPlayer = MediaPlayer.create(getBaseContext(), getUriForId(item.getSoundResourceId()));
+				mPlayer.setOnCompletionListener(MediaCompletionListener);
+				mPlayer.start();
+			} else {				
+//				HashMap<String, String> myHash = new HashMap<String, String>();
+//              myHash.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, Long.toString(item.getItemId()));
+				ttsPlayer.speak(item.getDescription(), TextToSpeech.QUEUE_ADD, null);
+				//AdvanceCurrentLocation();
+				LoadNextSound();
+				
+//				check for the presence of the TTS resources with the corresponding intent
+//		        Intent checkIntent = new Intent();
+//		        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+//		        startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+			}
 		} else {
-			mPlayer.release();
+			if (item.getHasSound())
+				mPlayer.release();
+			//else
+				//ttsPlayer.shutdown();
 		}
 	}
 	
@@ -244,8 +304,7 @@ public class SoundBoardActivity extends Activity {
 	private ArrayList<SoundBoardItem> LoadSequenceBoard(){
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 		
-	    SoundBoardItem s = new SoundBoardItem();
-		s.setDescription("Cougar");
+	    SoundBoardItem s = new SoundBoardItem("Cougar");
 		s.setIconResourceId(R.drawable.cougar);
 		s.setSoundResourceId(R.raw.cougar);
 		mLoadItems.add(s);
@@ -257,148 +316,34 @@ public class SoundBoardActivity extends Activity {
 		
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 		
-	    SoundBoardItem s = new SoundBoardItem();
-		s.setDescription("Cougar");
+	    SoundBoardItem s = new SoundBoardItem("Cougar");
 		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
+		//s.setSoundResourceId(R.raw.cougar);
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem();
-		s.setDescription("Chicken");
+		s = new SoundBoardItem("Chicken");
 		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
+		//s.setSoundResourceId(R.raw.chicken);
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem();
-		s.setDescription("Dog");
+		s = new SoundBoardItem("Dog");
 		s.setIconResourceId(R.drawable.dog);
 		s.setSoundResourceId(R.raw.dog);
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem();
-		s.setDescription("Elephant");
+		s = new SoundBoardItem("Elephant");
 		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem();
-		s.setDescription("Cougar");
-		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
+		s = new SoundBoardItem("Hug Me");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem();
-		s.setDescription("Chicken");
-		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Dog");
-		s.setIconResourceId(R.drawable.dog);
-		s.setSoundResourceId(R.raw.dog);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Elephant");
-		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Cougar");
-		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Chicken");
-		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Dog");
-		s.setIconResourceId(R.drawable.dog);
-		s.setSoundResourceId(R.raw.dog);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Elephant");
-		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
-		mLoadItems.add(s);
-		
-	    s = new SoundBoardItem();
-		s.setDescription("Cougar");
-		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Chicken");
-		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Dog");
-		s.setIconResourceId(R.drawable.dog);
-		s.setSoundResourceId(R.raw.dog);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Elephant");
-		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Cougar");
-		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Chicken");
-		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Dog");
-		s.setIconResourceId(R.drawable.dog);
-		s.setSoundResourceId(R.raw.dog);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Elephant");
-		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Cougar");
-		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Chicken");
-		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Dog");
-		s.setIconResourceId(R.drawable.dog);
-		s.setSoundResourceId(R.raw.dog);
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem();
-		s.setDescription("Elephant");
-		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
+		s = new SoundBoardItem("I");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
 		mLoadItems.add(s);
 		
 		return mLoadItems;
