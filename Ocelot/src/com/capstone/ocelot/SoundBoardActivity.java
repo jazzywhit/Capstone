@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Gallery;
 import android.widget.GridView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardGridAdapter;
@@ -74,9 +75,10 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	
 	public void onInit(int status) {
 		// TODO Auto-generated method stub
-		ttsPlayer.speak("Are you ready to play " + userName + "?", TextToSpeech.QUEUE_FLUSH, null);
+		//ttsPlayer.speak("Are you ready to play " + userName + "?", TextToSpeech.QUEUE_FLUSH, null);
 	}
 	
+	ScrollView scrollView;
 	Gallery sequenceView;
 	GridView gridView;
 	
@@ -106,12 +108,14 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		//TODO This will need to be extended so that we can load from a database!
 	    mSequenceItems = LoadSequenceBoard();
 	    
-	    //Setup the sequence adapter
+	    //Setup the Listener for the SequenceBar Container
+	    scrollView = (ScrollView) findViewById(R.id.seqscrollview);
+	    scrollView.setOnDragListener(new MyDragListener());
+	    
 	    //TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
 		sequenceView = (Gallery) findViewById(R.id.seqgallery);
 		seqAdapter = new SoundBoardSequenceAdapter(this); //TODO There must be a better way to update the adapter than having a global
 		sequenceView.setAdapter(seqAdapter);
-		sequenceView.setOnDragListener(new MyDragListener());
 		sequenceView.setOnItemClickListener(new OnItemClickListener() {  //Play the sound associated with the object.
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
@@ -220,10 +224,11 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	
 	class MyDragListener implements OnDragListener {
 		public boolean onDrag(View v, DragEvent event) {
+			//Log.v(NOTIFICATION_SERVICE, event.toString());
 			switch (event.getAction()) {
-			case DragEvent.ACTION_DROP:
+			case DragEvent.ACTION_DROP: //If the drag ended on the sequence bar
 					mSequenceItems.add(mCurrentItem);
-					((Gallery) sequenceView).setAdapter(seqAdapter);
+					sequenceView.setAdapter(seqAdapter);
 				break;
 			default:
 				break;
@@ -291,7 +296,9 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.new_game:
-	            //newGame();
+	        	mSequenceItems = new ArrayList<SoundBoardItem>();
+	        	sequenceView.setAdapter(seqAdapter);
+	        	scrollView.invalidate();
 	            return true;
 	        case R.id.help:
 	            //showHelp();
@@ -304,10 +311,8 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	private ArrayList<SoundBoardItem> LoadSequenceBoard(){
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 		
-	    SoundBoardItem s = new SoundBoardItem("Cougar");
-		s.setIconResourceId(R.drawable.cougar);
-		s.setSoundResourceId(R.raw.cougar);
-		mLoadItems.add(s);
+	    //SoundBoardItem s = new SoundBoardItem(" ");
+		//mLoadItems.add(s);
 	
 		return mLoadItems;
 	}
@@ -341,7 +346,42 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		//s.setSoundResourceId(R.raw.elephant);
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem("I");
+		s = new SoundBoardItem("Please");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("I Like");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("Make me");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("Drawing");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("Playing");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("and");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("You");
+		//s.setIconResourceId(R.drawable.elephant);
+		//s.setSoundResourceId(R.raw.elephant);
+		mLoadItems.add(s);
+		
+		s = new SoundBoardItem("Hug Me");
 		//s.setIconResourceId(R.drawable.elephant);
 		//s.setSoundResourceId(R.raw.elephant);
 		mLoadItems.add(s);

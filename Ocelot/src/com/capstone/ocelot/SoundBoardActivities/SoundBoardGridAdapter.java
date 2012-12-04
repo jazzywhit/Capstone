@@ -64,31 +64,9 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				tv.setText(viewItem.getDescription());
 			} else {
 				view = li.inflate(com.capstone.ocelot.R.layout.gridicontext, null);
-				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image_text);
+				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text_text);
 				
-				Paint paint = new Paint();
-				paint.setStyle(Paint.Style.FILL);
-				paint.setColor(Color.RED);
-				paint.setTextSize(20);
-				paint.setAntiAlias(true);
-				paint.setTypeface(Typeface.MONOSPACE);
-				
-				Bitmap bm = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
-				@SuppressWarnings("unused")
-				float x = bm.getWidth(); 
-				@SuppressWarnings("unused")
-				float y = bm.getHeight();
-				Canvas c = new Canvas(bm);
-				c.drawText(viewItem.getDescription(), 0, 100, paint);
-				
-				//tv.setText(viewItem.getDescription());
-				
-//				tv.setDrawingCacheEnabled(true);
-//				tv.destroyDrawingCache();
-//				tv.buildDrawingCache();
-//				Bitmap bitmap = getTransparentBitmapCopy(tv.getDrawingCache());
-				
-				iv.setImageBitmap(bm);
+				tv.setText(viewItem.getDescription());
 			}
 			
 //			LinearLayout lv = (LinearLayout)view.findViewById(com.capstone.ocelot.R.id.widget44); //TODO give this a better name

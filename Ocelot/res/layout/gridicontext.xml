@@ -3,10 +3,11 @@
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:background="@drawable/my_border">
-	<ImageView
-		android:id="@+id/icon_image_text"
-		android:layout_width="100dp"
+    <TextView
+        android:id="@+id/icon_text_text"
+        android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_gravity="top|center_horizontal">
-	</ImageView>
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:textSize="32dp" >
+    </TextView>
 </LinearLayout>
