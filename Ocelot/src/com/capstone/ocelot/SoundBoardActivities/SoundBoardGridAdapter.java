@@ -2,11 +2,6 @@ package com.capstone.ocelot.SoundBoardActivities;
 
 import android.content.ClipData;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,9 +10,7 @@ import android.view.View.DragShadowBuilder;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -110,17 +103,6 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				}
 			}
 		});
-		
 		return view;
-	}
-
-	private Bitmap getTransparentBitmapCopy(Bitmap drawingCache) {
-	    int width =  drawingCache.getWidth();
-	    int height = drawingCache.getHeight();
-	    Bitmap copy = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-	    int[] pixels = new int[width * height];
-	    drawingCache.getPixels(pixels, 0, width, 0, 0, width, height);
-	    copy.setPixels(pixels, 0, width, 0, 0, width, height);
-	    return copy;
 	}
 }

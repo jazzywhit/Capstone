@@ -7,6 +7,10 @@
         android:icon="@drawable/ic_new_game"
         android:title="@string/new_game"
         android:showAsAction="never" />
+    <item android:id="@+id/new_item"
+        android:icon="@drawable/ic_new_item"
+        android:title="@string/new_item"
+        android:showAsAction="never" />
     <item android:id="@+id/help"
         android:icon="@drawable/ic_help"
         android:title="@string/help">
