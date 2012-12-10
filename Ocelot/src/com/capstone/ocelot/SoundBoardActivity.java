@@ -7,11 +7,13 @@ import java.util.Locale;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -21,17 +23,22 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
@@ -39,6 +46,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.ocelot.SoundBoardActivities.SoundBoardAddItemDialog;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardGridAdapter;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardItem;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardSequenceAdapter;
@@ -62,15 +70,13 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	Gallery sequenceView;
 	GridView gridView;
 	
-	//--------------- FOR THE POPUP WINDOW
-	PopupWindow popUp;
-    LinearLayout layout;
-    TextView tv;
-    LayoutParams params;
-    LinearLayout mainLayout;
-    Button but;
-    boolean click = true;
-    ///------------------------
+	 PopupWindow popUp;
+	 LinearLayout layout;
+	 TextView tv;
+	 LayoutParams params;
+	 LinearLayout mainLayout;
+	 Button but;
+	 boolean click = true;
 
 	SoundBoardSequenceAdapter seqAdapter;
 
@@ -306,35 +312,8 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 			alert.show();
 			return true;
 		case R.id.new_item:
-			popUp = new PopupWindow(this);
-			layout = new LinearLayout(this);
-			mainLayout = new LinearLayout(this);
-			tv = new TextView(this);
-			but = new Button(this);
-			but.setText("Click Me");
-			but.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					if (click) {
-						popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
-						popUp.update(50, 50, 300, 80);
-						popUp.dismiss();
-						click = false;
-					} else {
-						popUp.dismiss();
-						click = true;
-					}
-				}
-
-			});
-			params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-					LayoutParams.WRAP_CONTENT);
-			layout.setOrientation(LinearLayout.VERTICAL);
-			tv.setText("Hi this is a sample text for popup window");
-			layout.addView(tv, params);
-			popUp.setContentView(layout);
-			// popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
-			mainLayout.addView(but, params);
-			setContentView(mainLayout);
+			SoundBoardAddItemDialog addItemDialog = new SoundBoardAddItemDialog();
+			addItemDialog.show(getFragmentManager(), "Add New Item");
 			return true;
 		case R.id.help:
 			return true;
