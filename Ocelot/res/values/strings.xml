@@ -17,5 +17,6 @@
     <string name="itemname">Item Name:</string>
     <string name="save_item">Save Item</string>
     <string name="cancel">Cancel</string>
+    <string name="delete_mode">Delete Items</string>
 
 </resources>

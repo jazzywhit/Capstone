@@ -11,6 +11,10 @@
         android:icon="@drawable/ic_new_item"
         android:title="@string/new_item"
         android:showAsAction="never" />
+    <item android:id="@+id/delete_mode"
+        android:icon="@drawable/ic_new_item"
+        android:title="@string/delete_mode"
+        android:showAsAction="never" />
     <item android:id="@+id/help"
         android:icon="@drawable/ic_help"
         android:title="@string/help">

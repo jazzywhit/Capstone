@@ -64,6 +64,8 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	Gallery sequenceView;
 	GridView gridView;
 	
+	boolean isDeleteMode = false;
+	
 	EditText dialogItemName;
 	String dialogResult;
 	static EditText dItemName;
@@ -290,6 +292,8 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		case R.id.new_item:
 			showNewItemDialog();
 			return true;
+		case R.id.delete_mode:
+			showDeleteModeDialog();
 		case R.id.help:
 			return true;
 		default:
@@ -332,6 +336,27 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		});
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		builder.create().show();
+	}
+	
+	//NEW GAME CREATION
+	void showDeleteModeDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(true);
+		builder.setTitle("Delete Items?");
+		builder.setInverseBackgroundForced(true);
+		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				isDeleteMode = true;
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				isDeleteMode = false;
 				dialog.dismiss();
 			}
 		});
