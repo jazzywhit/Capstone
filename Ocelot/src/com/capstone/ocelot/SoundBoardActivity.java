@@ -7,13 +7,11 @@ import java.util.Locale;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -22,23 +20,19 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
-import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
@@ -46,7 +40,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.capstone.ocelot.SoundBoardActivities.SoundBoardAddItemDialog;
+
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardGridAdapter;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardItem;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardSequenceAdapter;
@@ -70,13 +64,17 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	Gallery sequenceView;
 	GridView gridView;
 	
-	 PopupWindow popUp;
-	 LinearLayout layout;
-	 TextView tv;
-	 LayoutParams params;
-	 LinearLayout mainLayout;
-	 Button but;
-	 boolean click = true;
+	EditText dialogItemName;
+	String dialogResult;
+	static EditText dItemName;
+	
+//PopupWindow popUp;
+//LinearLayout layout;
+//TextView tv;
+//LayoutParams params;
+//LinearLayout mainLayout;
+//Button but;
+//boolean click = true;
 
 	SoundBoardSequenceAdapter seqAdapter;
 
@@ -153,7 +151,6 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		mGridItems = LoadSoundBoard(); //Load the initial items to the grid
 
 		//Setup the gridview adapter
-		//TODO This might be better done through a page view for scrolling the images.
 		gridView = (GridView) findViewById(R.id.gridview);
 		gridView.setAdapter(new SoundBoardGridAdapter(this));
 
@@ -165,7 +162,6 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		scrollView = (ScrollView) findViewById(R.id.seqscrollview);
 		scrollView.setOnDragListener(new MyDragListener());
 
-		//TODO Implement that horizontal List View: http://www.dev-smart.com/archives/34
 		sequenceView = (Gallery) findViewById(R.id.seqgallery);
 		seqAdapter = new SoundBoardSequenceAdapter(this); //TODO There must be a better way to update the adapter than having a global
 		sequenceView.setAdapter(seqAdapter);
@@ -289,37 +285,89 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.new_game: //TODO Add 'shake and clear' http://stackoverflow.com/questions/2317428/android-i-want-to-shake-it
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setCancelable(true);
-			//TODO This could probably have an icon.
-			//builder.setIcon(R.drawable.elephant);
-			builder.setTitle("New Game");
-			builder.setInverseBackgroundForced(true);
-			builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					mSequenceItems = new ArrayList<SoundBoardItem>();
-					sequenceView.setAdapter(seqAdapter);
-					scrollView.invalidate();
-					dialog.dismiss();
-				}
-			});
-			builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-				}
-			});
-			AlertDialog alert = builder.create();
-			alert.show();
+			showNewGameDialog();
 			return true;
 		case R.id.new_item:
-			SoundBoardAddItemDialog addItemDialog = new SoundBoardAddItemDialog();
-			addItemDialog.show(getFragmentManager(), "Add New Item");
+			showNewItemDialog();
 			return true;
 		case R.id.help:
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	void showNewItemDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		LayoutInflater inflater = getLayoutInflater();		
+		ViewGroup parent = (ViewGroup) inflater.inflate(R.layout.popup, null);
+		final EditText dItemName = (EditText) parent.findViewById(R.id.item_name);
+		
+		builder.setView(parent);
+		builder.setTitle("Create a New Item");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				mGridItems.add(new SoundBoardItem(dItemName.getText().toString()));
+			}
+		});
+		builder.setNegativeButton("CANCEL", null);
+		builder.create().show();
+	}
+	
+	//NEW GAME CREATION
+	void showNewGameDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(true);
+		//builder.setIcon(R.drawable.elephant);
+		builder.setTitle("New Game");
+		builder.setInverseBackgroundForced(true);
+		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				mSequenceItems = new ArrayList<SoundBoardItem>();
+				sequenceView.setAdapter(seqAdapter);
+				scrollView.invalidate();
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
+	
+//	private AlertDialog createNewItemDialog(){
+//		final EditText dItemName = (EditText) findViewById(R.id.item_name);
+//	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//	    LayoutInflater inflater = getLayoutInflater();
+//
+//	    // Inflate and set the layout for the dialog
+//	    // Pass null as the parent view because its going in the dialog layout
+//	    builder.setView(inflater.inflate(R.layout.popup, null))
+//	    // Add action buttons
+//	           .setPositiveButton(R.string.save_item, new DialogInterface.OnClickListener() {
+//	               public void onClick(DialogInterface dialog, int id) {	   
+//	            	   AddItemToGrid(new SoundBoardItem(dItemName.getText().toString()));
+//	            	   return;
+//	               }
+//	           })
+//	           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//	               public void onClick(DialogInterface dialog, int id) {
+//	            	   //getDialog().cancel();
+//	            	   return;
+//	               }
+//	           });      
+//	    builder.setTitle("New Item");	    
+//	    return builder.create();
+//	}
+	
+	
+	public void AddItemToGrid(SoundBoardItem newItem){
+		mGridItems.add(newItem);
 	}
 
 	private ArrayList<SoundBoardItem> LoadSequenceBoard(){

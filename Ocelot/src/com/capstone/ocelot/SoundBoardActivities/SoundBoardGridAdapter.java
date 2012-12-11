@@ -61,15 +61,6 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				
 				tv.setText(viewItem.getDescription());
 			}
-			
-//			LinearLayout lv = (LinearLayout)view.findViewById(com.capstone.ocelot.R.id.widget44); //TODO give this a better name
-//			lv.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-			
-			//view = new ImageView(mContext);
-			//view.setLayoutParams(new GridView.LayoutParams(150, 150));
-			//view.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			//view.setPadding(8, 8, 8, 8);
-			//view.setImageResource(viewItem.getIconResourceId());
 		} else {
 			view = convertView;
 		}

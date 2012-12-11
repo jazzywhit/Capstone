@@ -14,7 +14,7 @@
     <string name="help">Help</string>
     <string name="new_item">New Item</string>
     <string name="password">Password:</string>
-    <string name="username">User Name:</string>
+    <string name="itemname">Item Name:</string>
     <string name="save_item">Save Item</string>
     <string name="cancel">Cancel</string>
 
