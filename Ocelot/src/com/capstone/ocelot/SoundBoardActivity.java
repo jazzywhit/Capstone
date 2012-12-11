@@ -1,6 +1,9 @@
 package com.capstone.ocelot;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -14,18 +17,25 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -33,6 +43,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
@@ -52,10 +63,14 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 
 	ArrayList<SoundBoardItem> mGridItems;
 	ArrayList<SoundBoardItem> mSequenceItems;
+	int mSequenceLocation = 0;
+	
 	SoundBoardItem mCurrentItem;
 	Iterator<SoundBoardItem> sequenceIterator;
 	MediaPlayer mPlayer;
-	int currentLocation = 0;
+	//MediaRecorder mRecorder;
+	
+	
 	int MY_DATA_CHECK_CODE = 0;
 	String userName = "Jesse";
 	private TextToSpeech ttsPlayer;
@@ -65,18 +80,6 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	GridView gridView;
 	
 	boolean isDeleteMode = false;
-	
-	EditText dialogItemName;
-	String dialogResult;
-	static EditText dItemName;
-	
-//PopupWindow popUp;
-//LinearLayout layout;
-//TextView tv;
-//LayoutParams params;
-//LinearLayout mainLayout;
-//Button but;
-//boolean click = true;
 
 	SoundBoardSequenceAdapter seqAdapter;
 
@@ -170,9 +173,11 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		sequenceView.setOnItemClickListener(new OnItemClickListener() {  //Play the sound associated with the object.
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				currentLocation = 0;
-				sequenceView.setSelection(currentLocation);
-				sequenceView.invalidate();
+				//Reset the position of the sequence bar
+				mSequenceLocation = 0;
+				sequenceView.setSelection(mSequenceLocation);
+				
+				//sequenceView.invalidate();
 				sequenceIterator = mSequenceItems.iterator();
 				LoadNextSound();
 			}
@@ -224,9 +229,9 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 	}
 
 	public void AdvanceCurrentLocation(){
-		if (currentLocation < mSequenceItems.size() - 1){
-			currentLocation++;
-			sequenceView.setSelection(currentLocation);
+		if (mSequenceLocation < mSequenceItems.size() - 1){
+			mSequenceLocation++;
+			sequenceView.setSelection(mSequenceLocation);
 			sequenceView.invalidate();
 		}		
 	}
@@ -301,18 +306,100 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		}
 	}
 	
+	String sanitizePath(String path) {
+	    if (!path.startsWith("/")) {
+	      path = "/" + path;
+	    }
+	    if (!path.contains(".")) {
+	      path += ".3gp";
+	    }
+	    return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
+	}
+	
 	void showNewItemDialog(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		LayoutInflater inflater = getLayoutInflater();		
 		ViewGroup parent = (ViewGroup) inflater.inflate(R.layout.popup, null);
+		
 		final EditText dItemName = (EditText) parent.findViewById(R.id.item_name);
+		final ImageButton recordButton = (ImageButton) parent.findViewById(R.id.record_button);
+		recordButton.setEnabled(false);
+		final ImageButton playButton = (ImageButton) parent.findViewById(R.id.play_button);
+		playButton.setEnabled(false);
+		
+		//Setup Description Text
+		dItemName.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(s.length() > 0){
+					recordButton.setEnabled(true);
+					playButton.setEnabled(true);
+					//builder.getButton(builder.BUTTON1).setEnabled(false);
+				} else {
+					recordButton.setEnabled(false);
+					playButton.setEnabled(false);
+				}
+				mCurrentItem = new SoundBoardItem(dItemName.getText().toString());
+			}
+		});
+		
+		//Setup Media Recorder
+		final MediaRecorder mediaRecorder = new MediaRecorder();
+		mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+		mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+		mediaRecorder.setAudioChannels(1);
+		mediaRecorder.setAudioSamplingRate(8000);
+		mediaRecorder.setMaxDuration(3000); //TODO Must add ability to stop the recording.
+		
+		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "sounds");
+		directory.mkdirs(); 
+		
+		//TODO http://www.benmccann.com/dev-blog/android-audio-recording-tutorial/
+		recordButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String finalPath = sanitizePath("/sounds/" + dItemName.getText().toString());
+				mediaRecorder.setOutputFile(finalPath);
+				mCurrentItem.setSoundResourceId(finalPath);
+				try {
+					mediaRecorder.prepare();
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				mediaRecorder.start();
+			}
+		}); //TODO This should enable the play button, not necessarily the description field.
+		
+		//Setup Media Player
+		playButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mCurrentItem.getHasSound()){
+					mPlayer = MediaPlayer.create(getParent(), Uri.parse(mCurrentItem.getSoundResourceLocation()));
+					mPlayer.start();
+				}
+			}
+		});
 		
 		builder.setView(parent);
 		builder.setTitle("Create a New Item");
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
-				mGridItems.add(new SoundBoardItem(dItemName.getText().toString()));
+				mGridItems.add(mCurrentItem);
 			}
 		});
 		builder.setNegativeButton("CANCEL", null);
@@ -342,6 +429,7 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		builder.create().show();
 	}
 	
+
 	//NEW GAME CREATION
 	void showDeleteModeDialog(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -360,35 +448,8 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 				dialog.dismiss();
 			}
 		});
-		AlertDialog alert = builder.create();
-		alert.show();
+		builder.create().show();
 	}
-	
-	
-//	private AlertDialog createNewItemDialog(){
-//		final EditText dItemName = (EditText) findViewById(R.id.item_name);
-//	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//	    LayoutInflater inflater = getLayoutInflater();
-//
-//	    // Inflate and set the layout for the dialog
-//	    // Pass null as the parent view because its going in the dialog layout
-//	    builder.setView(inflater.inflate(R.layout.popup, null))
-//	    // Add action buttons
-//	           .setPositiveButton(R.string.save_item, new DialogInterface.OnClickListener() {
-//	               public void onClick(DialogInterface dialog, int id) {	   
-//	            	   AddItemToGrid(new SoundBoardItem(dItemName.getText().toString()));
-//	            	   return;
-//	               }
-//	           })
-//	           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//	               public void onClick(DialogInterface dialog, int id) {
-//	            	   //getDialog().cancel();
-//	            	   return;
-//	               }
-//	           });      
-//	    builder.setTitle("New Item");	    
-//	    return builder.create();
-//	}
 	
 	
 	public void AddItemToGrid(SoundBoardItem newItem){

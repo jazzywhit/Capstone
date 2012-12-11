@@ -3,6 +3,7 @@ package com.capstone.ocelot.SoundBoardActivities;
 import android.content.ClipData;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,7 +74,12 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 					
 					//If no sound present, just show the text
 					if (touchItem.getHasSound()){
-						MediaPlayer mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
+						MediaPlayer mp;
+						if (touchItem.isExternalSound()){
+							mp = MediaPlayer.create(mContext, Uri.parse(touchItem.getSoundResourceLocation()));
+						} else {
+							mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
+						}
 						mp.start();
 					} else {
 						Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
