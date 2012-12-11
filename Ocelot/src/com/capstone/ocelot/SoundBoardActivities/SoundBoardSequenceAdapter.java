@@ -43,20 +43,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			
-//			ImageView imageView = new ImageView(mContext);
-//			
-//			if (convertView == null) {  // if it's not recycled, initialize some attributes
-//				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//				imageView.setLayoutParams(new Gallery.LayoutParams(150, 150));
-//				imageView.setPadding(20, 20, 20, 20);
-//			} else {
-//				imageView = (ImageView) convertView;
-//			}
-//			
-//			imageView.setImageResource(((SoundBoardItem)getItem(position)).getIconResourceId());
-//			
-//			return imageView;
-			
 			View view;
 			if (convertView == null) {  // if it's not recycled, initialize some attributes
 				LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
@@ -76,15 +62,6 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 					
 					tv.setText(viewItem.getDescription());
 				}
-				
-//				LinearLayout lv = (LinearLayout)view.findViewById(com.capstone.ocelot.R.id.widget44); //TODO give this a better name
-//				lv.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-				
-				//view = new ImageView(mContext);
-				//view.setLayoutParams(new GridView.LayoutParams(150, 150));
-				//view.setScaleType(ImageView.ScaleType.CENTER_CROP);
-				//view.setPadding(8, 8, 8, 8);
-				//view.setImageResource(viewItem.getIconResourceId());
 			} else {
 				view = convertView;
 			}

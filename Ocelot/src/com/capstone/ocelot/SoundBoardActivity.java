@@ -258,7 +258,7 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		if (sequenceIterator.hasNext()){
 			item = sequenceIterator.next();
 			if (item.getHasSound()){
-				mPlayer = MediaPlayer.create(getBaseContext(), getUriForId(item.getSoundResourceId()));
+				mPlayer = item.getMediaPlayer(getBaseContext());
 				mPlayer.setOnCompletionListener(MediaCompletionListener);
 				mPlayer.start();
 			} else {				
@@ -345,11 +345,11 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 					recordButton.setEnabled(true);
 					playButton.setEnabled(true);
 					//builder.getButton(builder.BUTTON1).setEnabled(false);
+					mCurrentItem = new SoundBoardItem(dItemName.getText().toString());
 				} else {
 					recordButton.setEnabled(false);
 					playButton.setEnabled(false);
 				}
-				mCurrentItem = new SoundBoardItem(dItemName.getText().toString());
 			}
 		});
 		
@@ -363,7 +363,7 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 		mediaRecorder.setMaxDuration(3000); //TODO Must add ability to stop the recording.
 		
 		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "sounds");
-		directory.mkdirs(); 
+		directory.mkdirs();
 		
 		//TODO http://www.benmccann.com/dev-blog/android-audio-recording-tutorial/
 		recordButton.setOnClickListener(new OnClickListener() {
@@ -388,7 +388,7 @@ public class SoundBoardActivity extends Activity implements OnInitListener{
 			@Override
 			public void onClick(View v) {
 				if (mCurrentItem.getHasSound()){
-					mPlayer = MediaPlayer.create(getParent(), Uri.parse(mCurrentItem.getSoundResourceLocation()));
+					mPlayer = mCurrentItem.getMediaPlayer(getBaseContext());
 					mPlayer.start();
 				}
 			}

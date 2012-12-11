@@ -1,5 +1,9 @@
 package com.capstone.ocelot.SoundBoardActivities;
 
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.net.Uri;
+
 public class SoundBoardItem {
 	private long mItemId = 0;
 	private String mDescription = "";
@@ -27,4 +31,11 @@ public class SoundBoardItem {
 	public void setSoundResourceId(String location) { mSoundResourceLocation = location; setHasSound(true); setExternalSound(true);}
 	public int getSoundResourceId() { return mSoundResourceId; }
 	public String getSoundResourceLocation() { return mSoundResourceLocation; }
+	public MediaPlayer getMediaPlayer(Context context){
+		if (isExternalSound() && mhasSound)
+			return MediaPlayer.create(context, Uri.parse(getSoundResourceLocation()));
+		else if(!isExternalSound() && mhasSound)
+			return MediaPlayer.create(context, getSoundResourceId());
+		return null;
+	}
 }
