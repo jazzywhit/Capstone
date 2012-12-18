@@ -6,7 +6,7 @@
  pin 10 is connected to LOAD 
  We have four MAX7219 devices.
  */
-LedControl lc=LedControl(12,11,10,4);
+LedControl lc = LedControl(12,11,10,4);
 
 /*Wait between updates of the display */
 unsigned long delaytime=10;

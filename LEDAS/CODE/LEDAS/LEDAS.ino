@@ -6,14 +6,17 @@
  pin 10 is connected to LOAD 
  We have four MAX7219 devices.
 */
-LedControl lc=LedControl(12,11,10,4);
-
+LedControl lc = LedControl(12,11,10,4);
+#define HIGHBOUND 14
+#define LOWBOUND 0
+#define MIDBOUND 6
+#define DELAY 100
 
 //Input Push Buttons
-int dButton = 5;
-int uButton = 6;
-int lButton = 7;
-int rButton = 8;
+int dButton = A4;
+int uButton = A2;
+int lButton = A3;
+int rButton = A5;
 
 //Delay between updates of the display
 unsigned long delaytime=10;
@@ -60,114 +63,111 @@ void setup()
   lc.clearDisplay(1);
   lc.clearDisplay(2);
   lc.clearDisplay(3);
+  
+  lc.setLed(0,0,0,true);
+//  lc.setLed(0,0,1,true);
+//  lc.setLed(1,1,0,true);
+//  lc.setLed(1,1,1,true);
+//  lc.setLed(2,2,0,true);
+//  lc.setLed(2,2,2,true);
+//  lc.setLed(3,3,0,true);
+//  lc.setLed(3,3,3,true);
 }
 
 //Ueful snippits 
 // lc.setLed(address,row,col,true);
 
-int CheckButton(int buttonPin);
+//int CheckButton(int buttonPin);
 void DecX();
 void DecY();
 void IncX();
 void IncY();
+void ChangeLEDState(int tmpX, int tmpY, boolean state);
+void BlinkCursor();
+void WriteCursorChange();
 
 void loop() 
 {
-  if(CheckButton(dButton))
-  {
-    DecY();
-    lc.setLed(curMatrix,xCoor,yCoor,true);
-  }
-  if(CheckButton(uButton))
-  {
-    IncY();
-    lc.setLed(curMatrix,xCoor,yCoor,true);
-  }
-  if(CheckButton(lButton))
-  {
-    DecX();
-    lc.setLed(curMatrix,xCoor,yCoor,true);
-  }
-  if(CheckButton(rButton))
-  {
-    IncX();
-    lc.setLed(curMatrix,xCoor,yCoor,true);
-  }
-}
-
-int CheckButton(int buttonPin)
-{
-  int reading = digitalRead(buttonPin);
-
-  if (reading != lastButtonState) 
-  {
-    lastDebounceTime = millis();
-  } 
-  
-  if ((millis() - lastDebounceTime) > debounceDelay) 
-  {
-    buttonState = reading;
-  }
-
-  return buttonState;
-}
-
-void DecX()
-{
-  if(xCoor == 0 && (curMatrix == 4 ||curMatrix == 2))
-  {
-    curMatrix--;
-    xCoor = 8;
-  }
-  else if(xCoor == 0 && (curMatrix == 1 || curMatrix == 3))
-  {}
-  else
-  {
-     xCoor--; 
+  if (digitalRead(dButton) == HIGH && digitalRead(rButton) == HIGH){
+      IncX();
+      DecY();  
+  } else if (digitalRead(uButton) == HIGH && digitalRead(rButton) == HIGH) { 
+      IncX();
+      IncY();
+  } else if (digitalRead(dButton) == HIGH && digitalRead(lButton) == HIGH) { 
+      DecX();
+      DecY();
+  } else if (digitalRead(uButton) == HIGH && digitalRead(lButton) == HIGH) { 
+      DecX();
+      IncY();
+  } else {  
+    if(digitalRead(dButton) == HIGH)
+    {
+      DecY();
+    }
+    if(digitalRead(uButton) == HIGH)
+    {
+      IncY();
+    }
+    if(digitalRead(lButton) == HIGH)
+    {
+      DecX();
+    }
+    if(digitalRead(rButton) == HIGH)
+    {
+      IncX();
+    } //else {
+      //BlinkCursor();
+    //}
+    WriteCursorChange();
   }
 }
 
-void DecY()
-{
-  if(yCoor == 0 && (curMatrix == 3 ||curMatrix == 4))
-  {
-    curMatrix--;
-    yCoor = 8;
-  }
-  else if(yCoor == 0 && (curMatrix == 1 || curMatrix == 2))
-  {}
-  else
-  {
-     yCoor--; 
-  }  
+void BlinkCursor(){
+    ChangeLEDState(xCoor, yCoor, false);
+    delay(250);
+    ChangeLEDState(xCoor, yCoor, true);
+    delay(250);
 }
 
-void IncX()
-{
-  if(xCoor == 8 && (curMatrix == 1 || curMatrix == 3))
-  {
-    curMatrix++;
-    xCoor = 0;
-  }
-  else if(xCoor == 8 && (curMatrix == 2 || curMatrix == 4))
-  {}
-  else
-  {
-     xCoor++; 
+void ChangeLEDState(int tmpX, int tmpY, boolean state){
+    int matrix = 0;
+    
+    if (tmpX > MIDBOUND) {
+       matrix += 1;
+       tmpX -= 7;
+    } if (tmpY > MIDBOUND) {
+       matrix += 2;
+       tmpY -= 7;
+    }
+    lc.setLed(matrix, tmpX, tmpY, state);
+}
+
+void WriteCursorChange() {
+    delay(100);
+    ChangeLEDState(xCoor,yCoor,true);
+}
+
+void DecX() {
+  if (xCoor > LOWBOUND && xCoor < HIGHBOUND){
+    xCoor--;
   }
 }
 
-void IncY()
-{
-  if(yCoor == 8 && (curMatrix == 1 || curMatrix == 2))
-  {
-    curMatrix++;
-    yCoor = 0;
+void DecY() {
+  if (yCoor > LOWBOUND && yCoor < HIGHBOUND){
+    yCoor--;
   }
-  else if(yCoor == 8 && (curMatrix == 3 || curMatrix == 4))
-  {}
-  else
-  {
-     yCoor++; 
+}
+
+void IncX() {
+  if (xCoor > LOWBOUND && xCoor < HIGHBOUND){
+    xCoor++;
+  }
+}
+
+void IncY() {
+  if (yCoor > LOWBOUND && yCoor < HIGHBOUND){
+    yCoor++;
   }
 }
