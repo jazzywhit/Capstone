@@ -71,20 +71,8 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-					
-					//If no sound present, just show the text
-					if (touchItem.getHasSound()){
-						MediaPlayer mp;
-						if (touchItem.isExternalSound()){
-							mp = MediaPlayer.create(mContext, Uri.parse(touchItem.getSoundResourceLocation()));
-						} else {
-							mp = MediaPlayer.create(mContext, touchItem.getSoundResourceId());
-						}
-						mp.start();
-					} else {
-						Toast.makeText(mContext, touchItem.getDescription(), Toast.LENGTH_SHORT).show(); //Show the user the description
-					}
-					
+					MediaPlayer mp = touchItem.getMediaPlayer(mContext);
+					mp.start();
 					return true;
 				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
 					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
