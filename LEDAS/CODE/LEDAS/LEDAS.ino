@@ -7,7 +7,7 @@
  We have four MAX7219 devices.
 */
 LedControl lc = LedControl(12,11,10,4);
-#define HIGHBOUND 14
+#define HIGHBOUND 13
 #define LOWBOUND 0
 #define MIDBOUND 6
 #define DELAY 100
@@ -34,8 +34,7 @@ int yCoor;
 //Current Matrix
 int curMatrix;
 
-void setup() 
-{
+void setup() {
   xCoor = 0;
   yCoor = 0;
   curMatrix = 0;
@@ -65,13 +64,6 @@ void setup()
   lc.clearDisplay(3);
   
   lc.setLed(0,0,0,true);
-//  lc.setLed(0,0,1,true);
-//  lc.setLed(1,1,0,true);
-//  lc.setLed(1,1,1,true);
-//  lc.setLed(2,2,0,true);
-//  lc.setLed(2,2,2,true);
-//  lc.setLed(3,3,0,true);
-//  lc.setLed(3,3,3,true);
 }
 
 //Ueful snippits 
@@ -86,51 +78,49 @@ void ChangeLEDState(int tmpX, int tmpY, boolean state);
 void BlinkCursor();
 void WriteCursorChange();
 
-void loop() 
-{
+void loop() {
   if (digitalRead(dButton) == HIGH && digitalRead(rButton) == HIGH){
       IncX();
-      DecY();  
+      DecY();
+      WriteCursorChange();
   } else if (digitalRead(uButton) == HIGH && digitalRead(rButton) == HIGH) { 
       IncX();
       IncY();
+      WriteCursorChange();
   } else if (digitalRead(dButton) == HIGH && digitalRead(lButton) == HIGH) { 
       DecX();
       DecY();
+      WriteCursorChange();
   } else if (digitalRead(uButton) == HIGH && digitalRead(lButton) == HIGH) { 
       DecX();
       IncY();
+      WriteCursorChange();
   } else {  
-    if(digitalRead(dButton) == HIGH)
-    {
-      DecY();
-    }
-    if(digitalRead(uButton) == HIGH)
-    {
+    if(digitalRead(uButton) == HIGH) {
       IncY();
     }
-    if(digitalRead(lButton) == HIGH)
-    {
+    if(digitalRead(dButton) == HIGH) {
+      DecY();
+    }
+    if(digitalRead(rButton) == HIGH) {
+      IncX();
+    }
+    if(digitalRead(lButton) == HIGH) {
       DecX();
     }
-    if(digitalRead(rButton) == HIGH)
-    {
-      IncX();
-    } //else {
-      //BlinkCursor();
-    //}
     WriteCursorChange();
   }
+  BlinkCursor(); //Provides all the delays we need.
 }
 
-void BlinkCursor(){
+void BlinkCursor() {
     ChangeLEDState(xCoor, yCoor, false);
-    delay(250);
+    delay(200);
     ChangeLEDState(xCoor, yCoor, true);
-    delay(250);
+    delay(200);
 }
 
-void ChangeLEDState(int tmpX, int tmpY, boolean state){
+void ChangeLEDState(int tmpX, int tmpY, boolean state) {
     int matrix = 0;
     
     if (tmpX > MIDBOUND) {
@@ -144,30 +134,29 @@ void ChangeLEDState(int tmpX, int tmpY, boolean state){
 }
 
 void WriteCursorChange() {
-    delay(100);
     ChangeLEDState(xCoor,yCoor,true);
 }
 
 void DecX() {
-  if (xCoor > LOWBOUND && xCoor < HIGHBOUND){
+  if (xCoor > LOWBOUND){
     xCoor--;
   }
 }
 
 void DecY() {
-  if (yCoor > LOWBOUND && yCoor < HIGHBOUND){
+  if (yCoor > LOWBOUND){
     yCoor--;
   }
 }
 
 void IncX() {
-  if (xCoor > LOWBOUND && xCoor < HIGHBOUND){
+  if (xCoor < HIGHBOUND){
     xCoor++;
   }
 }
 
 void IncY() {
-  if (yCoor > LOWBOUND && yCoor < HIGHBOUND){
+  if (yCoor < HIGHBOUND){
     yCoor++;
   }
 }
