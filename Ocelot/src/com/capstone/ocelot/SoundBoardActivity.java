@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -45,6 +47,7 @@ import com.capstone.ocelot.SoundBoardActivities.SoundBoardGridAdapter;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardItem;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardSequenceAdapter;
 
+@TargetApi(11)
 public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitListener{
 
 	ArrayList<SoundBoardItem> mGridItems;
@@ -57,6 +60,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	//MediaRecorder mRecorder;
 	
 	//int MY_DATA_CHECK_CODE = 0;
+	static final int PICK_IMAGE = 1;
 	String userName = "Jesse";
 	private TextToSpeech ttsPlayer;
 	ScrollView scrollView;
@@ -184,8 +188,16 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	}
 	
 	public void addSequenceItem(){
-		mSequenceItems.add(mCurrentItem);
+		if (mCurrentItem != null)
+			mSequenceItems.add(mCurrentItem);
 		updateSequenceBar();
+	}
+	
+	public void addGridItem(){
+		if (mCurrentItem != null)
+			mGridItems.add(mCurrentItem);
+		VerifySoundBank(mGridItems);
+		UpdateGrid();
 	}
 
 	class MyDragListener implements OnDragListener {
@@ -310,10 +322,11 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		recordButton.setEnabled(false);
 		final ImageButton playButton = (ImageButton) parent.findViewById(R.id.play_button);
 		playButton.setEnabled(false);
+		final ImageButton picButton = (ImageButton) parent.findViewById(R.id.image_button);
+		picButton.setEnabled(false);
 		
 		//Setup Description Text
 		dItemName.addTextChangedListener(new TextWatcher() {
-			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 			}
@@ -328,11 +341,12 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 				if(s.length() > 0){
 					recordButton.setEnabled(true);
 					playButton.setEnabled(true);
-					//builder.getButton(builder.BUTTON1).setEnabled(false);
+					picButton.setEnabled(true);
 					mCurrentItem = new SoundBoardItem(getBaseContext(), dItemName.getText().toString());
 				} else {
 					recordButton.setEnabled(false);
 					playButton.setEnabled(false);
+					picButton.setEnabled(false);
 				}
 			}
 		});
@@ -348,6 +362,18 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		
 //		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "sounds");
 //		directory.mkdirs();
+		
+		picButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setType("image/*");
+				intent.setAction(Intent.ACTION_GET_CONTENT);
+				startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+				Log.v(Activity.ACCESSIBILITY_SERVICE, "Hello");
+			}
+		});
 		
 		//TODO http://www.benmccann.com/dev-blog/android-audio-recording-tutorial/
 		recordButton.setOnClickListener(new OnClickListener() {
@@ -381,7 +407,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
-				mGridItems.add(mCurrentItem);
+				addGridItem();
 			}
 		});
 		builder.setNegativeButton("CANCEL", null);
@@ -437,6 +463,8 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	}
 
 	private ArrayList<SoundBoardItem> LoadSequenceBoard(){
+		if (mSequenceItems != null)
+			return mSequenceItems;
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 		return mLoadItems;
 	}
@@ -472,6 +500,11 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 
 	private ArrayList<SoundBoardItem> LoadSoundBoard(){
 
+		//Check if the Items are already created.
+		if (mGridItems != null){
+			return mGridItems;
+		}
+		
 		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
 
 		SoundBoardItem s = new SoundBoardItem(this, "Cougar");
