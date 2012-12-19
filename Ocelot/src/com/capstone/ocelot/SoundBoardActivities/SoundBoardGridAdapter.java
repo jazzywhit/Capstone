@@ -3,7 +3,6 @@ package com.capstone.ocelot.SoundBoardActivities;
 import android.content.ClipData;
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.capstone.ocelot.SoundBoardActivity;
 
@@ -48,7 +46,7 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 			LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
 			SoundBoardItem viewItem = (SoundBoardItem) getItem(position); 
 			
-			if(viewItem.getHasImage()) {
+			if(viewItem.hasImage()) {
 				view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
 				
 				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
@@ -65,29 +63,6 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		} else {
 			view = convertView;
 		}
-
-		view.setOnTouchListener(new OnTouchListener(){
-
-			public boolean onTouch(View view, MotionEvent motionEvent) {
-				if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-					MediaPlayer mp = touchItem.getMediaPlayer(mContext);
-					mp.start();
-					return true;
-				} else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE){
-					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-					setCurrentItem(touchItem);
-					ClipData data = ClipData.newPlainText("", "");
-					DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-					view.startDrag(data, shadowBuilder, view, 0);
-					return true;
-				} else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
 		return view;
 	}
 }

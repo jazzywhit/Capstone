@@ -5,14 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.capstone.ocelot.SoundBoardActivity;
 
-@SuppressWarnings("deprecation")
 public class SoundBoardSequenceAdapter extends BaseAdapter {
 
 		Context mContext;
@@ -48,7 +45,7 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 				LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
 				SoundBoardItem viewItem = (SoundBoardItem) getItem(position); 
 				
-				if(viewItem.getHasImage()) {
+				if(viewItem.hasImage()) {
 					view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
 					
 					ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
