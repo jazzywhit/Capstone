@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.res.Resources;
@@ -21,7 +20,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,12 +28,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.DragShadowBuilder;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -102,34 +97,6 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		gridView = (GridView) findViewById(R.id.gridview);
 		gridAdapter = new SoundBoardGridAdapter(this);
 		gridView.setAdapter(gridAdapter);
-		gridView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				SoundBoardItem touchItem = mGridItems.get(arg2);
-				MediaPlayer mp = touchItem.getMediaPlayer(getBaseContext());
-				((SoundBoardActivity) getBaseContext()).OrganizeGrid(); //Organize by the amount played
-				mp.start();
-			}
-		});
-		
-		gridView.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_MOVE){
-//					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-//					setCurrentItem(touchItem);
-					ClipData data = ClipData.newPlainText("", "");
-					DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-					v.startDrag(data, shadowBuilder, v, 0);
-					return true;
-				} else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
 
 		//Set and load the soundboardItems
 		//TODO This will need to be extended so that we can load from a database!
@@ -158,9 +125,9 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		});	   
 	}
 	
-	public void OrganizeGrid() {
+	public void UpdateGrid() {
 		Collections.sort(mGridItems);
-		//gridView.setAdapter(gridAdapter);
+		gridView.setAdapter(gridAdapter);
 		gridView.invalidate();
 	}
 
@@ -215,20 +182,33 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			sequenceView.invalidate();
 		}		
 	}
+	
+	public void addSequenceItem(){
+		mSequenceItems.add(mCurrentItem);
+		updateSequenceBar();
+	}
 
 	class MyDragListener implements OnDragListener {
 		public boolean onDrag(View v, DragEvent event) {
 			//Log.v(NOTIFICATION_SERVICE, event.toString());
 			switch (event.getAction()) {
 			case DragEvent.ACTION_DROP: //If the drag ended on the sequence bar
-				mSequenceItems.add(mCurrentItem);
-				sequenceView.setAdapter(seqAdapter);
 				break;
 			default:
 				break;
 			}
 			return true;
 		}
+	}
+	
+	public void updateSequenceBar(){
+		sequenceView.setAdapter(seqAdapter);
+		sequenceView.invalidate();
+	}
+	
+	public void removeGridItem(int position){
+		mGridItems.remove(position);
+		UpdateGrid();
 	}
 
 	public void LoadNextSound(){
@@ -241,6 +221,10 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		} else {
 			mPlayer.release();
 		}
+	}
+	
+	public boolean isDeleteMode(){
+		return isDeleteMode;
 	}
 	
 	//Advance a number of positions so that you are on the one that the user has clicked.
@@ -277,12 +261,22 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			showNewItemDialog();
 			return true;
 		case R.id.delete_mode:
-			showDeleteModeDialog();
+			if (isDeleteMode) {
+				endDeleteMode(item);
+			} else {
+				showDeleteModeDialog(item);
+			}
 		case R.id.help:
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void endDeleteMode(MenuItem item){
+		item.setTitle(R.string.delete_mode);
+		isDeleteMode = false;
+		UpdateGrid();
 	}
 
 	String sanitizePath3gp(String path) {
@@ -418,7 +412,8 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	}
 	
 	//DELETE MODE
-	void showDeleteModeDialog(){
+	void showDeleteModeDialog(final MenuItem menuItem){
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCancelable(true);
 		builder.setTitle("Delete Items?");
@@ -426,12 +421,15 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				isDeleteMode = true;
+				menuItem.setTitle(R.string.delete_mode_off);
 				dialog.dismiss();
+				UpdateGrid();
 			}
 		});
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				isDeleteMode = false;
+				menuItem.setTitle(R.string.delete_mode);
 				dialog.dismiss();
 			}
 		});
@@ -451,7 +449,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 				Toast.makeText(this, "Language not supported", Toast.LENGTH_LONG).show();
 				Log.e("TTS", "Language is not supported");
 			}
-			ttsPlayer.speak("Welcome" + userName, TextToSpeech.QUEUE_ADD, null);
+			//ttsPlayer.speak("Welcome" + userName, TextToSpeech.QUEUE_ADD, null);
 			VerifySoundBank(mGridItems);
 			VerifySoundBank(mSequenceItems);
 		} else {    //TTS is not initialized properly

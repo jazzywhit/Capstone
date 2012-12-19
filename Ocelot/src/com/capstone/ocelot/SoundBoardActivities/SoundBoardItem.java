@@ -3,7 +3,6 @@ package com.capstone.ocelot.SoundBoardActivities;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Environment;
 import android.speech.tts.TextToSpeech;
 
 public class SoundBoardItem implements Comparable<SoundBoardItem>{
@@ -38,13 +37,12 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 	public void setIconResourceId(int id) { mIconResourceId = id; mHasImage = true;}
 	public int getIconResourceId() { return mIconResourceId; }
 	public void setSoundResourceId(int id) { mSoundResourceId = id; isExternalAudio = false; mHasSound = true;}
-	public void setSoundResourceId(String location) { mSoundResourceLocation = location; isExternalAudio = true; mHasSound = false; }
+	public void setSoundResourceId(String location) { mSoundResourceLocation = location; isExternalAudio = true; mHasSound = true; }
 	public int getSoundResourceId() { return mSoundResourceId; }
 	public String getSoundResourceLocation() { return mSoundResourceLocation; }
 	public Long getNumPlays() { return numPlays; }
 	
 	public MediaPlayer getMediaPlayer(Context context){
-		//Increment the number of plays
 		numPlays++;
 		
 		 //Return the MediaPlayer
@@ -52,15 +50,5 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 			return MediaPlayer.create(context, Uri.parse(getSoundResourceLocation()));
 		else
 			return MediaPlayer.create(context, getSoundResourceId());
-	}
-	
-	String sanitizePath(String path) {
-	    if (!path.startsWith("/")) {
-	      path = "/" + path;
-	    }
-	    if (!path.contains(".")) {
-	      path += ".wav";
-	    }
-	    return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
 	}
 }
