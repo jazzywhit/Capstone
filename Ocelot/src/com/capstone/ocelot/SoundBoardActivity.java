@@ -44,9 +44,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AbsListView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Gallery;
@@ -116,6 +118,22 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		gridView = (GridView) findViewById(R.id.gridview);
 		gridAdapter = new SoundBoardGridAdapter(this);
 		gridView.setAdapter(gridAdapter);
+//		gridView.setOnScrollListener(new OnScrollListener() {
+//			@Override
+//			public void onScrollStateChanged(AbsListView view, int scrollState) {
+//				// TODO Auto-generated method stub
+//				//gridAdapter.notifyDataSetChanged();
+//				//gridView.invalidateViews();
+//				gridView.setAdapter(gridAdapter);
+//			}
+//			
+//			@Override
+//			public void onScroll(AbsListView view, int firstVisibleItem,
+//					int visibleItemCount, int totalItemCount) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
 
 		//Setup the Listener for the SequenceBar Container
 		mSequenceItems = LoadSequenceBoard();
@@ -163,6 +181,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		gridAdapter.notifyDataSetChanged();
 		gridView.invalidateViews();
 		gridView.setAdapter(gridAdapter);
+		VerifySoundBank(mGridItems);
 	}
 
 	public ArrayList<SoundBoardItem> getGridItems(){
@@ -377,6 +396,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			if (mGridItems.size() == 0){
 				LoadDefaultGrid();
 			}
+			UpdateGrid();
 			clearSequenceBar();
 			return true;
 		case R.id.new_item:

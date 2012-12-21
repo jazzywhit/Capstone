@@ -77,65 +77,128 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
 		View view;
+		final SoundBoardItem viewItem = (SoundBoardItem) getItem(position);
+		
 		if (convertView == null) {  // if it's not recycled, initialize some attributes
 			LayoutInflater li = getParent().getLayoutInflater();
-			SoundBoardItem viewItem = (SoundBoardItem) getItem(position); 
-			
-			if(viewItem.hasImage()) {
+//			if(viewItem.hasImage()) {
 				view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
-				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
-				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
-				if (viewItem.isExternalImage())
-					iv.setImageURI(viewItem.getIconResourceUri());
-				else
-					iv.setImageResource(viewItem.getIconResourceId());
-				tv.setText(viewItem.getDescription());
-				view.setBackground(getBackground());
-			} else {
-				view = li.inflate(com.capstone.ocelot.R.layout.gridicontext, null);
-				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text_text);
-				tv.setText(viewItem.getDescription());
-				view.setBackground(getBackground());
-			}
+//				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
+//				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
+//				if (viewItem.hasImage()){
+//					if (viewItem.isExternalImage())
+//						iv.setImageURI(viewItem.getIconResourceUri());
+//					else
+//						iv.setImageResource(viewItem.getIconResourceId());
+//				}
+//				tv.setText(viewItem.getDescription());
+//				view.setBackground(getBackground());
+//			} else {
+//				view = li.inflate(com.capstone.ocelot.R.layout.gridicontext, null);
+//				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text_text);
+//				tv.setText(viewItem.getDescription());
+//				view.setBackground(getBackground());
+//			}
 			
-			view.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PlayGridItem(position);
-				}
-			});
+//			view.setOnClickListener(new OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					PlayGridItem(position);
+//				}
+//			});
+//			
+//			view.setOnLongClickListener(new OnLongClickListener() {
+//				@Override
+//				public boolean onLongClick(View v) {
+//					PlayGridItem(position);
+//					return true;
+//				}
+//			});
 			
-			view.setOnLongClickListener(new OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					PlayGridItem(position);
-					return true;
-				}
-			});
-			
-			view.setOnTouchListener(new OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {					
-					if (event.getAction() == MotionEvent.ACTION_MOVE){
-						//Create the Drop Shadow
-						ClipData data = ClipData.newPlainText("", "");
-						DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-						v.startDrag(data, shadowBuilder, v, 0);
-						
-						//Set the current Item
-						SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-						getParent().setCurrentItem(touchItem);
-						return true;
-					} else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			});
+//			view.setOnTouchListener(new OnTouchListener() {
+//				@Override
+//				public boolean onTouch(View v, MotionEvent event) {					
+//					if (event.getAction() == MotionEvent.ACTION_MOVE){
+//						//Create the Drop Shadow
+//						ClipData data = ClipData.newPlainText("", "");
+//						DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+//						v.startDrag(data, shadowBuilder, v, 0);
+//						
+//						//Set the current Item
+//						SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
+//						getParent().setCurrentItem(touchItem);
+//						return true;
+//					} else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+//						return true;
+//					} else {
+//						return false;
+//					}
+//				}
+//			});
 		} else {
 			view = convertView;
 		}
+		
+//		if (viewItem == null){
+//			return view;
+//		}
+		
+		//Set the layouts for the different types of buttons.
+//		if(viewItem.hasImage()) {
+			ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
+			if (viewItem.isExternalImage())
+				iv.setImageURI(viewItem.getIconResourceUri());
+			else
+				iv.setImageResource(viewItem.getIconResourceId());
+//		}
+		
+		TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
+		tv.setText(viewItem.getDescription());
+		view.setBackground(getBackground());
+//			if (viewItem.hasImage())	
+//				tv.settex
+//		} else {
+//			TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text_text);
+//			tv.setText(viewItem.getDescription());
+//			view.setBackground(getBackground());
+//		}
+			
+		view.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				PlayGridItem(position);
+			}
+		});
+//		
+		view.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				PlayGridItem(position);
+				return true;
+			}
+		});
+		
+		view.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {					
+				if (event.getAction() == MotionEvent.ACTION_MOVE){
+					//Create the Drop Shadow
+					ClipData data = ClipData.newPlainText("", "");
+					DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+					v.startDrag(data, shadowBuilder, v, 0);
+					
+					//Set the current Item
+					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
+					getParent().setCurrentItem(touchItem);
+					return true;
+				} else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
+		
 		return view;
 	}
 }
