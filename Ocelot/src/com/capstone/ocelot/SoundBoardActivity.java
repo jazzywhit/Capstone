@@ -1,7 +1,11 @@
 package com.capstone.ocelot;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
@@ -57,13 +61,9 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	ArrayList<SoundBoardItem> mGridItems;
 	ArrayList<SoundBoardItem> mSequenceItems;
 	int mSequenceLocation = 0;
-	
 	SoundBoardItem mCurrentItem;
 	Iterator<SoundBoardItem> sequenceIterator;
 	MediaPlayer mPlayer;
-	//MediaRecorder mRecorder;
-	
-//	Intent BrowsePictureIntent;
 	
 	//New Item Window
 	ImageButton picButton;
@@ -76,9 +76,9 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	ScrollView scrollView;
 	Gallery sequenceView;
 	GridView gridView;
-	
 	boolean isDeleteMode = false;
 	
+	//View Adapters
 	SoundBoardSequenceAdapter seqAdapter;
 	SoundBoardGridAdapter gridAdapter;
 
@@ -99,8 +99,8 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		//Create Directory to store sounds in; ignore if already created
-		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "sounds");
+		//Create Directory to store data in; ignore if already created
+		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "vocalot");
 		directory.mkdirs();
 		
 		//Set and load the soundboardItems
@@ -272,6 +272,44 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		inflater.inflate(R.menu.activity_default, menu);
 		return true;
 	}
+	
+	private void SaveState(){
+//		String destFileName = sanitizePathSer("/vocalot/database").replaceAll("\\s",""); //Remove all white space on the file name as well
+		ObjectOutputStream os;
+		try {
+			FileOutputStream fos = this.openFileOutput("database.ser", Context.MODE_PRIVATE);
+			os = new ObjectOutputStream(fos);
+			for(SoundBoardItem item : mGridItems)
+				os.writeObject(item);
+			os.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
+	private void LoadState(){
+		mGridItems = new ArrayList<SoundBoardItem>();
+		
+		try {
+			FileInputStream fis = this.openFileInput("database.ser");
+			ObjectInputStream is = new ObjectInputStream(fis);
+			while (is.readBoolean()){
+				try {
+					SoundBoardItem tempItem = (SoundBoardItem) is.readObject();
+//					Log.v(tempItem.toString(), " ");
+					//mGridItems.add((SoundBoardItem) is.readObject());
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			is.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -289,7 +327,21 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			} else {
 				showDeleteModeDialog(item);
 			}
+			return true;
+		case R.id.save:
+			SaveState();
+			return true;
+		case R.id.load:
+			LoadState();
+			UpdateGrid();
+			return true;
 		case R.id.help:
+			AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+			dlgAlert.setMessage("If You Need Support Please Email or Call me at:\nPhone - (978) 257-1697\nEmail - JesseCWhitworth@gmail.com");
+			dlgAlert.setTitle("Support Information");
+			dlgAlert.setPositiveButton("OK", null);
+			dlgAlert.setCancelable(false);
+			dlgAlert.create().show();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -318,6 +370,16 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	    }
 	    if (!path.contains(".")) {
 	      path += ".wav";
+	    }
+	    return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
+	}
+	
+	String sanitizePathSer(String path) {
+	    if (!path.startsWith("/")) {
+	      path = "/" + path;
+	    }
+	    if (!path.contains(".")) {
+	      path += ".ser";
 	    }
 	    return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
 	}
@@ -389,7 +451,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		recordButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String finalPath = sanitizePath3gp("/sounds/" + dItemName.getText().toString());
+				String finalPath = sanitizePath3gp("/vocalot/" + dItemName.getText().toString());
 				mediaRecorder.setOutputFile(finalPath);
 				mCurrentItem.setSoundResourceId(finalPath);
 				try {
@@ -515,7 +577,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		for (SoundBoardItem item : soundBank){
 			if (!item.hasSound()){
 				HashMap<String, String> myHashRender = new HashMap<String, String>();
-				String destFileName = sanitizePathWav("/sounds/" + item.getDescription()).replaceAll("\\s",""); //Remove all white space on the file name as well
+				String destFileName = sanitizePathWav("/vocalot/" + item.getDescription()).replaceAll("\\s",""); //Remove all white space on the file name as well
 				myHashRender.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, item.getDescription());
 				ttsPlayer.synthesizeToFile(item.getDescription(), myHashRender, destFileName);
 				item.setSoundResourceId(destFileName);

@@ -1,28 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
     <item android:id="@+id/new_game"
-        android:icon="@drawable/ic_new_game"
         android:title="@string/new_game"
-        android:showAsAction="never" />
+        android:showAsAction="never" android:orderInCategory="50"/>
     <item android:id="@+id/new_item"
-        android:icon="@drawable/ic_new_item"
         android:title="@string/new_item"
-        android:showAsAction="never" />
+        android:showAsAction="never" android:orderInCategory="60"/>
     <item android:id="@+id/delete_mode"
-        android:icon="@drawable/ic_new_item"
         android:title="@string/delete_mode"
-        android:showAsAction="never" />
-    <item android:id="@+id/help"
+        android:showAsAction="never" android:orderInCategory="70"/>
+    <item android:id="@+id/save"
+        android:title="Save" android:orderInCategory="80">
+    </item>
+    <item android:id="@+id/load"
         android:icon="@drawable/ic_help"
-        android:title="@string/help">
-        <menu>
-            <item android:id="@+id/about"
-                android:title="@string/about" />
-            <item android:id="@+id/help_topics"
-                android:title="@string/help_topics" />
-        </menu>
+        android:title="Load" android:orderInCategory="90">
+    </item>
+    <item android:id="@+id/help"
+        android:title="@string/help" android:orderInCategory="100">
     </item>
 </menu>

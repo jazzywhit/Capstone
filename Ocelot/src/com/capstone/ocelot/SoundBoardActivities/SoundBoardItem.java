@@ -1,17 +1,15 @@
 package com.capstone.ocelot.SoundBoardActivities;
 
+import java.io.Serializable;
+
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.speech.tts.TextToSpeech;
 
-public class SoundBoardItem implements Comparable<SoundBoardItem>{
+public class SoundBoardItem implements Comparable<SoundBoardItem>, Serializable{
 	
-	@Override //Make the Items comparable
-	public int compareTo(SoundBoardItem another) {
-		return another.getNumPlays().compareTo(this.getNumPlays());
-	}
-	
+	private static final long serialVersionUID = -4944390099592827522L;
 	private long mItemId = 0;
 	private String mDescription;
 	private int mSoundResourceId = -1;
@@ -24,8 +22,8 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 	private boolean isExternalImage = false;
 	private long numPlays = 0;
 	
-	Context mContext;
-	TextToSpeech ttsPlayer;
+	transient protected Context mContext;
+	transient protected TextToSpeech ttsPlayer;
 	
 	public SoundBoardItem(Context context, String description) { mDescription = description; mContext = context; } //You must have a description to create a SoundBoardItem
 	public void setItemId(long itemId) { mItemId = itemId; }
@@ -39,13 +37,11 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 	public void setDescription(String description) { mDescription = description;}
 	public String getDescription() { return mDescription; }
 	public void setIconResourceId(int id) { mIconResourceId = id; mHasImage = true; }
-	
 	public void setIconResourceId(Uri uri) { 
 		isExternalImage = true;
 		mHasImage = true;
 		mImageResourceLocation = uri;
 	}
-	
 	public int getIconResourceId() { return mIconResourceId; }
 	public Uri getIconResourceUri() { return mImageResourceLocation; }
 	public void setSoundResourceId(int id) { mSoundResourceId = id; isExternalAudio = false; mHasSound = true;}
@@ -53,7 +49,6 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 	public int getSoundResourceId() { return mSoundResourceId; }
 	public String getSoundResourceLocation() { return mSoundResourceLocation; }
 	public Long getNumPlays() { return numPlays; }
-	
 	public MediaPlayer getMediaPlayer(Context context){
 		numPlays++;
 		
@@ -62,5 +57,9 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 			return MediaPlayer.create(context, Uri.parse(getSoundResourceLocation()));
 		else
 			return MediaPlayer.create(context, getSoundResourceId());
+	}
+	@Override
+	public int compareTo(SoundBoardItem another) {
+		return another.getNumPlays().compareTo(this.getNumPlays());
 	}
 }
