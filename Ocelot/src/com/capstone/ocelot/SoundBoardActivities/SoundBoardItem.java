@@ -42,6 +42,7 @@ public class SoundBoardItem implements Comparable<SoundBoardItem>{
 	
 	public void setIconResourceId(Uri uri) { 
 		isExternalImage = true;
+		mHasImage = true;
 		mImageResourceLocation = uri;
 	}
 	

@@ -54,7 +54,10 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 				if(viewItem.hasImage()) {
 					view = li.inflate(com.capstone.ocelot.R.layout.seqicon, null);
 					ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.seq_icon_image);
-					iv.setImageResource(viewItem.getIconResourceId());
+					if (viewItem.isExternalImage())
+						iv.setImageURI(viewItem.getIconResourceUri());
+					else
+						iv.setImageResource(viewItem.getIconResourceId());
 				} else {
 					view = li.inflate(com.capstone.ocelot.R.layout.seqicontext, null);
 					TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.seq_icon_text_text);

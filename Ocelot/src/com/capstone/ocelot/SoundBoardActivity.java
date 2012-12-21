@@ -13,9 +13,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
@@ -37,6 +39,7 @@ import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.GridView;
@@ -55,12 +58,12 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	ArrayList<SoundBoardItem> mSequenceItems;
 	int mSequenceLocation = 0;
 	
-	Intent BrowsePictureIntent;
-	
 	SoundBoardItem mCurrentItem;
 	Iterator<SoundBoardItem> sequenceIterator;
 	MediaPlayer mPlayer;
 	//MediaRecorder mRecorder;
+	
+//	Intent BrowsePictureIntent;
 	
 	//New Item Window
 	ImageButton picButton;
@@ -138,8 +141,9 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	
 	public void UpdateGrid() {
 		Collections.sort(mGridItems);
+		gridAdapter.notifyDataSetChanged();
+		gridView.invalidateViews();
 		gridView.setAdapter(gridAdapter);
-		gridView.invalidate();
 	}
 
 	public ArrayList<SoundBoardItem> getGridItems(){
@@ -320,16 +324,12 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    // Check which request we're responding to
 	    if (requestCode == PICK_IMAGE) {
-	        // Make sure the request was successful
 	        if (resultCode == RESULT_OK) {
-//	        	newItemURI = data.getData();
-	        	picButton.setImageURI(data.getData());
-	        	//mCurrentItem.setIconResourceId(data.getData());
-	            // The user picked a contact.
-	            // The Intent's data Uri identifies which contact was selected.
-	            // Do something with the contact here (bigger example below)
+	        	if (data != null){
+		        	mCurrentItem.setIconResourceId(data.getData());
+	        	}
+	        	addGridItem();
 	        }
 	    }
 	}
@@ -347,8 +347,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		final ImageButton playButton = (ImageButton) parent.findViewById(R.id.play_button);
 		playButton.setEnabled(false);
 		
-		picButton = (ImageButton) parent.findViewById(R.id.image_button);
-		picButton.setEnabled(false);
+		final CheckBox imageCheckBox = (CheckBox) parent.findViewById(R.id.image_checkbox);
 		
 		//Setup Description Text
 		dItemName.addTextChangedListener(new TextWatcher() {
@@ -366,36 +365,25 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 				if(s.length() > 0){
 					recordButton.setEnabled(true);
 					playButton.setEnabled(true);
-					picButton.setEnabled(true);
 					mCurrentItem = new SoundBoardItem(getBaseContext(), dItemName.getText().toString());
 				} else {
 					recordButton.setEnabled(false);
 					playButton.setEnabled(false);
-					picButton.setEnabled(false);
 				}
 			}
 		});
 		
 		//Setup Media Recorder
+		AudioManager audioManager = (AudioManager)getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+		audioManager.setMode(AudioManager.MODE_NORMAL);
+		
 		final MediaRecorder mediaRecorder = new MediaRecorder();
 		mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
 		mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 		mediaRecorder.setAudioChannels(1);
-		mediaRecorder.setAudioSamplingRate(8000);
+		mediaRecorder.setAudioSamplingRate(44100);
 		mediaRecorder.setMaxDuration(3000);
-		
-		picButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				BrowsePictureIntent = new Intent();
-				BrowsePictureIntent.setType("image/*");
-//				intent.setDataAndType(Uri.parse(url), "image/*");
-				BrowsePictureIntent.setAction(Intent.ACTION_GET_CONTENT);
-				startActivityForResult(Intent.createChooser(BrowsePictureIntent, "Select Picture"), PICK_IMAGE);
-				Log.v(Activity.ACCESSIBILITY_SERVICE, "Hello");
-			}
-		});
 		
 		//TODO http://www.benmccann.com/dev-blog/android-audio-recording-tutorial/
 		recordButton.setOnClickListener(new OnClickListener() {
@@ -412,6 +400,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 					e.printStackTrace();
 				}
 				mediaRecorder.start();
+				recordButton.setEnabled(false); //Disable the button afterwards
 			}
 		}); //TODO This should enable the play button, not necessarily the description field.
 		
@@ -428,10 +417,24 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
-				addGridItem();
+				dialog.dismiss();
+				if (imageCheckBox.isChecked()){
+					Intent BrowsePictureIntent = new Intent();
+					BrowsePictureIntent.setType("image/*");
+					BrowsePictureIntent.setAction(Intent.ACTION_GET_CONTENT);
+					startActivityForResult(Intent.createChooser(BrowsePictureIntent, "Select Picture"), PICK_IMAGE);
+				} else {
+					addGridItem();
+				}
 			}
 		});
-		builder.setNegativeButton("CANCEL", null);
+		builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				UpdateGrid();
+			}
+		});
 		builder.create().show();
 	}
 	
@@ -444,8 +447,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				mSequenceItems = new ArrayList<SoundBoardItem>();
-				sequenceView.setAdapter(seqAdapter);
-				scrollView.invalidate();
+				updateSequenceBar();
 				dialog.dismiss();
 				UpdateGrid(); //Update the grid, sorted by number of plays.
 			}
@@ -453,6 +455,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				UpdateGrid();
 			}
 		});
 		builder.create().show();
@@ -477,6 +480,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 				isDeleteMode = false;
 				menuItem.setTitle(R.string.delete_mode);
 				dialog.dismiss();
+				UpdateGrid();
 			}
 		});
 		builder.create().show();
@@ -533,29 +537,44 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		s.setSoundResourceId(R.raw.cougar);
 		mLoadItems.add(s);
 
-		s = new SoundBoardItem(this, "Chicken");
-		s.setIconResourceId(R.drawable.chicken);
-		s.setSoundResourceId(R.raw.chicken);
-		mLoadItems.add(s);
-
-		s = new SoundBoardItem(this, "Dog");
-		s.setIconResourceId(R.drawable.dog);
-		s.setSoundResourceId(R.raw.dog);
-		mLoadItems.add(s);
-
-		s = new SoundBoardItem(this, "Elephant");
-		s.setIconResourceId(R.drawable.elephant);
-		s.setSoundResourceId(R.raw.elephant);
-		mLoadItems.add(s);
-
-		s = new SoundBoardItem(this, "Hug Me");
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem(this, "Friend");
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem(this, "Love");
-		mLoadItems.add(s);
+//		s = new SoundBoardItem(this, "Chicken");
+//		s.setIconResourceId(R.drawable.chicken);
+//		s.setSoundResourceId(R.raw.chicken);
+//		mLoadItems.add(s);
+//
+//		s = new SoundBoardItem(this, "Dog");
+//		s.setIconResourceId(R.drawable.dog);
+//		s.setSoundResourceId(R.raw.dog);
+//		mLoadItems.add(s);
+//
+//		s = new SoundBoardItem(this, "Elephant");
+//		s.setIconResourceId(R.drawable.elephant);
+//		s.setSoundResourceId(R.raw.elephant);
+//		mLoadItems.add(s);
+//
+//		s = new SoundBoardItem(this, "Hug Me");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Friend");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Love");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Monkey");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Done");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Forever");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Never");
+//		mLoadItems.add(s);
+//		
+//		s = new SoundBoardItem(this, "Alone");
+//		mLoadItems.add(s);
 
 		return mLoadItems;
 	}
