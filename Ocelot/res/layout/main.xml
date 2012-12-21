@@ -8,6 +8,7 @@
     android:focusableInTouchMode="true"
     android:gravity="fill"
     android:orientation="vertical"
+    android:padding="10dp"
     android:scrollbarAlwaysDrawVerticalTrack="true" >
     
     <GridView
@@ -15,19 +16,27 @@
         android:id="@+id/gridview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/seqscrollview"
-        android:columnWidth="200dp"
+        android:layout_above="@+id/spacer"
+        android:columnWidth="170dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="40dp"
-        android:horizontalSpacing="40dp" >
+        android:verticalSpacing="80dp"
+        android:background="@drawable/textfield_search_empty_default"
+        android:horizontalSpacing="80dp" >
     </GridView>
+    
+    <View
+        android:id="@+id/spacer"
+        android:layout_width="fill_parent"
+        android:layout_height="10dp"
+        android:layout_above="@+id/seqscrollview">
+    </View>
     
     <ScrollView
         android:id="@+id/seqscrollview"
-        android:background="@drawable/black_border"
+        android:background="@drawable/textfield_search_empty_default"
         android:layout_width="fill_parent"
-        android:layout_height="200dp"
+        android:layout_height="130dp"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" >

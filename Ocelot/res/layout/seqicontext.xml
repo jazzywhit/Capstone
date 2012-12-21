@@ -6,12 +6,12 @@
 	android:gravity="center">
 	
     <TextView
-        android:id="@+id/icon_text_text"
-        android:layout_height="130dp"
-        android:layout_width="wrap_content"
+        android:id="@+id/seq_icon_text_text"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
         android:gravity="center"
         android:padding="5dp"
         android:layout_weight="1"
-        android:textSize="32dp" >
+        android:textSize="22dp" >
     </TextView>
 </LinearLayout>

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -54,10 +55,16 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	ArrayList<SoundBoardItem> mSequenceItems;
 	int mSequenceLocation = 0;
 	
+	Intent BrowsePictureIntent;
+	
 	SoundBoardItem mCurrentItem;
 	Iterator<SoundBoardItem> sequenceIterator;
 	MediaPlayer mPlayer;
 	//MediaRecorder mRecorder;
+	
+	//New Item Window
+	ImageButton picButton;
+	Uri newItemURI;
 	
 	//int MY_DATA_CHECK_CODE = 0;
 	static final int PICK_IMAGE = 1;
@@ -89,7 +96,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		//Create Directory to store sounds in
+		//Create Directory to store sounds in; ignore if already created
 		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "sounds");
 		directory.mkdirs();
 		
@@ -202,9 +209,9 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 
 	class MyDragListener implements OnDragListener {
 		public boolean onDrag(View v, DragEvent event) {
-			//Log.v(NOTIFICATION_SERVICE, event.toString());
 			switch (event.getAction()) {
 			case DragEvent.ACTION_DROP: //If the drag ended on the sequence bar
+				addSequenceItem();
 				break;
 			default:
 				break;
@@ -311,9 +318,26 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	    return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
 	}
 	
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//	    // Check which request we're responding to
+//	    if (requestCode == PICK_IMAGE) {
+//	        // Make sure the request was successful
+//	        if (resultCode == RESULT_OK) {
+////	        	newItemURI = data.getData();
+//	        	picButton.setImageURI(data.getData());
+//	        	//mCurrentItem.setIconResourceId(data.getData());
+//	            // The user picked a contact.
+//	            // The Intent's data Uri identifies which contact was selected.
+//	            // Do something with the contact here (bigger example below)
+//	        }
+//	    }
+//	}
+	
 	//NEW ITEM
 	void showNewItemDialog(){
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
 		LayoutInflater inflater = getLayoutInflater();		
 		ViewGroup parent = (ViewGroup) inflater.inflate(R.layout.popup, null);
 		
@@ -322,7 +346,8 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		recordButton.setEnabled(false);
 		final ImageButton playButton = (ImageButton) parent.findViewById(R.id.play_button);
 		playButton.setEnabled(false);
-		final ImageButton picButton = (ImageButton) parent.findViewById(R.id.image_button);
+		
+		picButton = (ImageButton) parent.findViewById(R.id.image_button);
 		picButton.setEnabled(false);
 		
 		//Setup Description Text
@@ -364,13 +389,13 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 //		directory.mkdirs();
 		
 		picButton.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.setType("image/*");
-				intent.setAction(Intent.ACTION_GET_CONTENT);
-				startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+				BrowsePictureIntent = new Intent();
+				BrowsePictureIntent.setType("image/*");
+//				intent.setDataAndType(Uri.parse(url), "image/*");
+				BrowsePictureIntent.setAction(Intent.ACTION_GET_CONTENT);
+				startActivityForResult(Intent.createChooser(BrowsePictureIntent, "Select Picture"), PICK_IMAGE);
 				Log.v(Activity.ACCESSIBILITY_SERVICE, "Hello");
 			}
 		});
@@ -403,7 +428,6 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		});
 		
 		builder.setView(parent);
-		builder.setTitle("Create a New Item");
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -435,6 +459,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			}
 		});
 		builder.create().show();
+		UpdateGrid(); //Update the grid, sorted by number of plays.
 	}
 	
 	//DELETE MODE
@@ -533,13 +558,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		s = new SoundBoardItem(this, "Friend");
 		mLoadItems.add(s);
 		
-		s = new SoundBoardItem(this, "I");
-		mLoadItems.add(s);
-		
 		s = new SoundBoardItem(this, "Love");
-		mLoadItems.add(s);
-		
-		s = new SoundBoardItem(this, "Chocolate");
 		mLoadItems.add(s);
 
 		return mLoadItems;

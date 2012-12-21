@@ -1,9 +1,11 @@
 package com.capstone.ocelot.SoundBoardActivities;
 
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.capstone.ocelot.SoundBoardActivity;
 
+@TargetApi(16)
 public class SoundBoardGridAdapter extends BaseAdapter {
 	private Context mContext;
 
@@ -41,22 +44,36 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 		return ((SoundBoardActivity)mContext);
 	}
 	
-	public void setCurrentItem(SoundBoardItem item){
-		((SoundBoardActivity)mContext).setCurrentItem(item);
-	}
-	
 	private Drawable getBackground(){
 		Drawable bg;
-		
 		if (getParent().isDeleteMode()){
-			bg = getParent().getResources().getDrawable(com.capstone.ocelot.R.drawable.red_border);
+			bg = getParent().getResources().getDrawable(com.capstone.ocelot.R.drawable.editbox_background_focus_yellow);
 		} else {
-			bg = getParent().getResources().getDrawable(com.capstone.ocelot.R.drawable.black_border);
+			bg = getParent().getResources().getDrawable(com.capstone.ocelot.R.drawable.editbox_dropdown_background);
 		}
 		return bg;
 	}
+	
+	private void PlayGridItem(int position){
+		if (getParent().isDeleteMode()){
+			getParent().removeGridItem(position);
+		} else {
+			SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
+			MediaPlayer mPlayer = touchItem.getMediaPlayer(mContext);
+			if(mPlayer.isPlaying()){
+				mPlayer.release();
+			}
+			mPlayer.setOnCompletionListener(new OnCompletionListener() {
+				public void onCompletion(MediaPlayer mp) {
+					mp.release();
+				}
+			});
+			mPlayer.start();
+		}
+	}
 
 	// create a new ImageView for each item referenced by the Adapter
+	@TargetApi(16)
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
 		View view;
@@ -68,52 +85,46 @@ public class SoundBoardGridAdapter extends BaseAdapter {
 				view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
 				ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
 				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
-				iv.setImageResource(viewItem.getIconResourceId());
+				if (viewItem.isExternalImage())
+					iv.setImageURI(viewItem.getIconResourceUri());
+				else
+					iv.setImageResource(viewItem.getIconResourceId());
 				tv.setText(viewItem.getDescription());
-				view.setBackgroundDrawable(getBackground());
+				view.setBackground(getBackground());
 			} else {
 				view = li.inflate(com.capstone.ocelot.R.layout.gridicontext, null);
 				TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text_text);
 				tv.setText(viewItem.getDescription());
-				view.setBackgroundDrawable(getBackground());
+				view.setBackground(getBackground());
 			}
 			
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (getParent().isDeleteMode()){
-						getParent().removeGridItem(position);
-					} else {
-						SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-						MediaPlayer mPlayer = touchItem.getMediaPlayer(mContext);
-						mPlayer.start();
-						getParent().UpdateGrid(); //Organize by the amount played
-					}
+					PlayGridItem(position);
 				}
 			});
 			
 			view.setOnLongClickListener(new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-//					MediaPlayer mPlayer = touchItem.getMediaPlayer(mContext);
-//					mPlayer.start();
-					
-					getParent().setCurrentItem(touchItem);
-					getParent().addSequenceItem();
+					PlayGridItem(position);
 					return true;
 				}
 			});
 			
 			view.setOnTouchListener(new OnTouchListener() {
 				@Override
-				public boolean onTouch(View v, MotionEvent event) {
+				public boolean onTouch(View v, MotionEvent event) {					
 					if (event.getAction() == MotionEvent.ACTION_MOVE){
-						SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
-						setCurrentItem(touchItem);
+						//Create the Drop Shadow
 						ClipData data = ClipData.newPlainText("", "");
 						DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
 						v.startDrag(data, shadowBuilder, v, 0);
+						
+						//Set the current Item
+						SoundBoardItem touchItem = (SoundBoardItem)getItem(position);
+						getParent().setCurrentItem(touchItem);
 						return true;
 					} else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
 						return true;

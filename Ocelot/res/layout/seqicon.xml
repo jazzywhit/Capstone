@@ -6,23 +6,13 @@
     android:gravity="center">
 
     <ImageView
-        android:id="@+id/icon_image"
+        android:id="@+id/seq_icon_image"
         android:layout_height="100dp"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:paddingTop="5dp" 
         android:gravity="center"
         android:contentDescription="Image"
         android:layout_weight="1"
         tools:ignore="HardcodedText" >
-    </ImageView>
-    <TextView
-        android:id="@+id/icon_text"
-        android:layout_height="30dp"
-        android:layout_width="wrap_content"
-        android:gravity="center"
-        android:paddingTop="5dp"
-        android:layout_weight="1"
-        android:textSize="15dp" >
-    </TextView>
-
+    </ImageView>
 </LinearLayout>

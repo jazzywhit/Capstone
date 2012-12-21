@@ -1,5 +1,6 @@
 package com.capstone.ocelot.SoundBoardActivities;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.capstone.ocelot.SoundBoardActivity;
 
+@TargetApi(16)
 public class SoundBoardSequenceAdapter extends BaseAdapter {
 
 		Context mContext;
@@ -29,6 +31,10 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 		public long getItemId(int position) {
 			return 0;
 		}
+		
+		SoundBoardActivity getParent(){
+			return ((SoundBoardActivity)mContext);
+		}
 
 		public long getItemIconId(int position) {
 			return ((SoundBoardItem)getItem(position)).getIconResourceId();
@@ -42,27 +48,22 @@ public class SoundBoardSequenceAdapter extends BaseAdapter {
 			
 			View view;
 			if (convertView == null) {  // if it's not recycled, initialize some attributes
-				LayoutInflater li = ((SoundBoardActivity)mContext).getLayoutInflater();
-				SoundBoardItem viewItem = (SoundBoardItem) getItem(position); 
+				LayoutInflater li = getParent().getLayoutInflater();
+				SoundBoardItem viewItem = getParent().getSequenceItem(position); 
 				
 				if(viewItem.hasImage()) {
-					view = li.inflate(com.capstone.ocelot.R.layout.gridicon, null);
-					
-					ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.icon_image);
-					TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text);
-					
+					view = li.inflate(com.capstone.ocelot.R.layout.seqicon, null);
+					ImageView iv = (ImageView)view.findViewById(com.capstone.ocelot.R.id.seq_icon_image);
 					iv.setImageResource(viewItem.getIconResourceId());
-					tv.setText(viewItem.getDescription());
 				} else {
-					view = li.inflate(com.capstone.ocelot.R.layout.gridicontext, null);
-					TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.icon_text_text);
-					
+					view = li.inflate(com.capstone.ocelot.R.layout.seqicontext, null);
+					TextView tv = (TextView)view.findViewById(com.capstone.ocelot.R.id.seq_icon_text_text);
 					tv.setText(viewItem.getDescription());
 				}
 			} else {
 				view = convertView;
 			}
-			
+			view.setBackground(getParent().getResources().getDrawable(com.capstone.ocelot.R.drawable.editbox_dropdown_background));
 			return view;
 		}
 }

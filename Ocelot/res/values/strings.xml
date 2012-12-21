@@ -14,10 +14,11 @@
     <string name="help">Help</string>
     <string name="new_item">New Item</string>
     <string name="password">Password:</string>
-    <string name="itemname">Item Name:</string>
+    <string name="itemname">Description:</string>
     <string name="save_item">Save Item</string>
     <string name="cancel">Cancel</string>
     <string name="delete_mode">Delete Items</string>
     <string name="delete_mode_off">Disable Delete Mode</string>
+    <string name="type_here">...</string>
 
 </resources>
