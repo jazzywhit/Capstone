@@ -9,11 +9,11 @@
         android:title="@string/delete_mode"
         android:showAsAction="never" android:orderInCategory="70"/>
     <item android:id="@+id/save"
-        android:title="Save" android:orderInCategory="80">
+        android:title="@string/save_menu" android:orderInCategory="80">
     </item>
     <item android:id="@+id/load"
         android:icon="@drawable/ic_help"
-        android:title="Load" android:orderInCategory="90">
+        android:title="@string/load_menu" android:orderInCategory="90">
     </item>
     <item android:id="@+id/help"
         android:title="@string/help" android:orderInCategory="100">

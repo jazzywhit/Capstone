@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -21,6 +20,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -43,6 +46,7 @@ import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Gallery;
@@ -55,6 +59,7 @@ import com.capstone.ocelot.SoundBoardActivities.SoundBoardGridAdapter;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardItem;
 import com.capstone.ocelot.SoundBoardActivities.SoundBoardSequenceAdapter;
 
+@SuppressWarnings("deprecation")
 @TargetApi(11)
 public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitListener{
 
@@ -81,7 +86,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	//View Adapters
 	SoundBoardSequenceAdapter seqAdapter;
 	SoundBoardGridAdapter gridAdapter;
-
+	
 	void SequenceNext(){
 		AdvanceCurrentLocation();
 		LoadNextSound();
@@ -105,23 +110,27 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		
 		//Set and load the soundboardItems
 		//TODO This will need to be extended so that we can load from a database!
-		mGridItems = LoadSoundBoard(); //Load the initial items to the grid
+		LoadState(); //Load the initial items to the grid
 
 		//Setup the gridview adapter
 		gridView = (GridView) findViewById(R.id.gridview);
 		gridAdapter = new SoundBoardGridAdapter(this);
 		gridView.setAdapter(gridAdapter);
 
-		//Set and load the soundboardItems
-		//TODO This will need to be extended so that we can load from a database!
-		mSequenceItems = LoadSequenceBoard();
-
 		//Setup the Listener for the SequenceBar Container
+		mSequenceItems = LoadSequenceBoard();
 		scrollView = (ScrollView) findViewById(R.id.seqscrollview);
 		scrollView.setOnDragListener(new MyDragListener());
 		
 		//Create the TTS Device
 		ttsPlayer = new TextToSpeech(this, this);
+		
+		//Accelerometer Support
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+	    mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+	    mAccel = 0.00f;
+	    mAccelCurrent = SensorManager.GRAVITY_EARTH;
+	    mAccelLast = SensorManager.GRAVITY_EARTH;
 
 		sequenceView = (Gallery) findViewById(R.id.seqgallery);
 		seqAdapter = new SoundBoardSequenceAdapter(this);
@@ -137,6 +146,16 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 				LoadNextSound(arg2);
 			}
 		});	   
+		
+		sequenceView.setOnItemLongClickListener(new OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				mSequenceItems.remove(position);
+				updateSequenceBar();
+				return false;
+			}
+		});
 	}
 	
 	public void UpdateGrid() {
@@ -274,35 +293,31 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	}
 	
 	private void SaveState(){
-//		String destFileName = sanitizePathSer("/vocalot/database").replaceAll("\\s",""); //Remove all white space on the file name as well
 		ObjectOutputStream os;
 		try {
 			FileOutputStream fos = this.openFileOutput("database.ser", Context.MODE_PRIVATE);
 			os = new ObjectOutputStream(fos);
-			for(SoundBoardItem item : mGridItems)
-				os.writeObject(item);
+			os.writeObject(mGridItems);
 			os.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
 	
+	@SuppressWarnings("unchecked") //The object is going to be correct, no need to check it.
 	private void LoadState(){
 		mGridItems = new ArrayList<SoundBoardItem>();
-		
 		try {
 			FileInputStream fis = this.openFileInput("database.ser");
 			ObjectInputStream is = new ObjectInputStream(fis);
-			while (is.readBoolean()){
-				try {
-					SoundBoardItem tempItem = (SoundBoardItem) is.readObject();
-//					Log.v(tempItem.toString(), " ");
-					//mGridItems.add((SoundBoardItem) is.readObject());
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try {
+				mGridItems = (ArrayList<SoundBoardItem>) is.readObject();
+				if (mGridItems.size() == 0){
+					LoadDefaultGrid();
 				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			is.close();
 		} catch (IOException e) {
@@ -310,13 +325,59 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			e.printStackTrace();
 		}
 	}
+	
+	 /* put this into your activity class */
+	  private SensorManager mSensorManager;
+	  private float mAccel; // acceleration apart from gravity
+	  private float mAccelCurrent; // current acceleration including gravity
+	  private float mAccelLast; // last acceleration including gravity
 
+	  private final SensorEventListener mSensorListener = new SensorEventListener() {
+
+	    public void onSensorChanged(SensorEvent se) {
+	      float x = se.values[0];
+	      float y = se.values[1];
+	      float z = se.values[2];
+	      mAccelLast = mAccelCurrent;
+	      mAccelCurrent = (float) Math.sqrt((double) (x*x + y*y + z*z));
+	      float delta = mAccelCurrent - mAccelLast;
+	      mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+	    }
+	    
+//	    onshak
+
+	    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	    }
+	  };
+
+	  @Override
+	  protected void onResume() {
+	    super.onResume();
+	    mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+	  }
+
+	  @Override
+	  protected void onPause() {
+	    mSensorManager.unregisterListener(mSensorListener);
+	    super.onPause();
+	  }
+
+
+	private void clearSequenceBar(){
+		mSequenceItems = new ArrayList<SoundBoardItem>();
+		updateSequenceBar();
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.new_game: //TODO Add 'shake and clear' http://stackoverflow.com/questions/2317428/android-i-want-to-shake-it
-			showNewGameDialog();
+//			showNewGameDialog();
+			if (mGridItems.size() == 0){
+				LoadDefaultGrid();
+			}
+			clearSequenceBar();
 			return true;
 		case R.id.new_item:
 			showNewItemDialog();
@@ -392,6 +453,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		        	mCurrentItem.setIconResourceId(data.getData());
 	        	}
 	        	addGridItem();
+	        	SaveState(); //Always save the state after you add a new item.
 	        }
 	    }
 	}
@@ -508,8 +570,10 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		builder.setInverseBackgroundForced(true);
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				mSequenceItems = new ArrayList<SoundBoardItem>();
-				updateSequenceBar();
+				clearSequenceBar();
+				if (mGridItems.size() == 0){
+					LoadDefaultGrid();
+				}
 				dialog.dismiss();
 				UpdateGrid(); //Update the grid, sorted by number of plays.
 			}
@@ -585,59 +649,55 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		}
 	}
 
-	private ArrayList<SoundBoardItem> LoadSoundBoard(){
+	private void LoadDefaultGrid(){
 
-		//Check if the Items are already created.
-		if (mGridItems != null){
-			return mGridItems;
-		}
-		
-		ArrayList<SoundBoardItem> mLoadItems = new ArrayList<SoundBoardItem>();
+		mGridItems = new ArrayList<SoundBoardItem>();
 
 		SoundBoardItem s = new SoundBoardItem(this, "Cougar");
 		s.setIconResourceId(R.drawable.cougar);
 		s.setSoundResourceId(R.raw.cougar);
-		mLoadItems.add(s);
+		mGridItems.add(s);
 
-//		s = new SoundBoardItem(this, "Chicken");
-//		s.setIconResourceId(R.drawable.chicken);
-//		s.setSoundResourceId(R.raw.chicken);
-//		mLoadItems.add(s);
-//
-//		s = new SoundBoardItem(this, "Dog");
-//		s.setIconResourceId(R.drawable.dog);
-//		s.setSoundResourceId(R.raw.dog);
-//		mLoadItems.add(s);
-//
-//		s = new SoundBoardItem(this, "Elephant");
-//		s.setIconResourceId(R.drawable.elephant);
-//		s.setSoundResourceId(R.raw.elephant);
-//		mLoadItems.add(s);
-//
-//		s = new SoundBoardItem(this, "Hug Me");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Friend");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Love");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Monkey");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Done");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Forever");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Never");
-//		mLoadItems.add(s);
-//		
-//		s = new SoundBoardItem(this, "Alone");
-//		mLoadItems.add(s);
+		s = new SoundBoardItem(this, "Chicken");
+		s.setIconResourceId(R.drawable.chicken);
+		s.setSoundResourceId(R.raw.chicken);
+		mGridItems.add(s);
 
-		return mLoadItems;
+		s = new SoundBoardItem(this, "Dog");
+		s.setIconResourceId(R.drawable.dog);
+		s.setSoundResourceId(R.raw.dog);
+		mGridItems.add(s);
+
+		s = new SoundBoardItem(this, "Elephant");
+		s.setIconResourceId(R.drawable.elephant);
+		s.setSoundResourceId(R.raw.elephant);
+		mGridItems.add(s);
+
+		s = new SoundBoardItem(this, "Hug Me");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "Friend");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "Love");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "I want");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "Dancing");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "Hungry");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "I am");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "Happy");
+		mGridItems.add(s);
+		
+		s = new SoundBoardItem(this, "My");
+		mGridItems.add(s);
 	}
 }

@@ -1,12 +1,12 @@
 <resources>
 
-    <string name="app_name">Ocelot</string>
+    <string name="app_name">vOcalot</string>
     <string name="title_section3">Section 3</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section1">Section 1</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_default">Sound Board</string>
+    <string name="title_activity_default">vOcalot</string>
     <string name="hello">Please click on an animal!</string>
     <string name="new_game">New Game</string>
     <string name="help_topics">Help Topics</string>
@@ -17,8 +17,10 @@
     <string name="itemname">Description:</string>
     <string name="save_item">Save Item</string>
     <string name="cancel">Cancel</string>
-    <string name="delete_mode">Delete Mode</string>
-    <string name="delete_mode_off">Disable Delete Mode</string>
+    <string name="delete_mode">Enter Delete Mode</string>
+    <string name="delete_mode_off">Enter Play Mode</string>
     <string name="type_here">...</string>
+    <string name="load_menu">Restore</string>
+    <string name="save_menu">Save</string>
 
 </resources>
