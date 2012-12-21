@@ -318,21 +318,21 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	    return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
 	}
 	
-//	@Override
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//	    // Check which request we're responding to
-//	    if (requestCode == PICK_IMAGE) {
-//	        // Make sure the request was successful
-//	        if (resultCode == RESULT_OK) {
-////	        	newItemURI = data.getData();
-//	        	picButton.setImageURI(data.getData());
-//	        	//mCurrentItem.setIconResourceId(data.getData());
-//	            // The user picked a contact.
-//	            // The Intent's data Uri identifies which contact was selected.
-//	            // Do something with the contact here (bigger example below)
-//	        }
-//	    }
-//	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    // Check which request we're responding to
+	    if (requestCode == PICK_IMAGE) {
+	        // Make sure the request was successful
+	        if (resultCode == RESULT_OK) {
+//	        	newItemURI = data.getData();
+	        	picButton.setImageURI(data.getData());
+	        	//mCurrentItem.setIconResourceId(data.getData());
+	            // The user picked a contact.
+	            // The Intent's data Uri identifies which contact was selected.
+	            // Do something with the contact here (bigger example below)
+	        }
+	    }
+	}
 	
 	//NEW ITEM
 	void showNewItemDialog(){
@@ -384,9 +384,6 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 		mediaRecorder.setAudioChannels(1);
 		mediaRecorder.setAudioSamplingRate(8000);
 		mediaRecorder.setMaxDuration(3000);
-		
-//		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "sounds");
-//		directory.mkdirs();
 		
 		picButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -442,7 +439,6 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 	void showNewGameDialog(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCancelable(true);
-		//builder.setIcon(R.drawable.elephant);
 		builder.setTitle("New Game");
 		builder.setInverseBackgroundForced(true);
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -451,6 +447,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 				sequenceView.setAdapter(seqAdapter);
 				scrollView.invalidate();
 				dialog.dismiss();
+				UpdateGrid(); //Update the grid, sorted by number of plays.
 			}
 		});
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -459,12 +456,10 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			}
 		});
 		builder.create().show();
-		UpdateGrid(); //Update the grid, sorted by number of plays.
 	}
 	
 	//DELETE MODE
 	void showDeleteModeDialog(final MenuItem menuItem){
-		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCancelable(true);
 		builder.setTitle("Delete Items?");
@@ -509,6 +504,7 @@ public class SoundBoardActivity extends Activity implements TextToSpeech.OnInitL
 			Toast.makeText(this, "TTS Initilization Failed", Toast.LENGTH_LONG).show();
 			Log.e("TTS", "Initilization Failed");
 		}
+		UpdateGrid(); //Do a final update once everything is loaded.
 	}
 	
 	private void VerifySoundBank(ArrayList<SoundBoardItem> soundBank){
